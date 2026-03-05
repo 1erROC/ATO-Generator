@@ -1,0 +1,2550 @@
+<!doctype html>
+<!--
+  ATO Generator (USMTF)
+  by [1eROC] Seluj
+  MIT License
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ATO Generator (USMTF) — Realistic v3.3</title>
+  <style>
+    :root { --bg:#0a0e1a; --panel:#0f1318; --ink:#e8e8e8; --muted:#777777; --line:#1a1f2b; --accent:#ffffff; --danger:#ff3333; --okbg:#0a0e1a; --okbd:#3bed82; }
+    body { margin:0; font-family: "Courier New", ui-monospace, SFMono-Regular, monospace; background:linear-gradient(135deg, #0a0d15 0%, #0f1318 50%, #0a0d15 100%); color:var(--ink); background-attachment:fixed; }
+    header { padding:18px 20px; border-bottom:2px solid var(--line); background:linear-gradient(180deg, rgba(232,232,232,0.02), transparent); box-shadow:0 0 20px rgba(0,0,0,0.5); }
+    header h1 { margin:0; font-size:18px; letter-spacing:0.2px; color:var(--ink); text-shadow:none; }
+    header p { margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
+
+    .wrap { display:grid; grid-template-columns: 640px 1fr; gap:14px; padding:14px; }
+    @media (max-width: 1200px){ .wrap { grid-template-columns: 1fr; } }
+
+    .card { background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.4), inset 0 0 1px rgba(232,232,232,0.05); }
+    .card h2 { margin:0; padding:12px 14px; font-size:14px; border-bottom:1px solid var(--line); color:var(--ink); text-shadow:none; }
+    .card .body { padding:12px 14px; }
+
+    .tabs { display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--line); background:transparent; }
+    .tabbtn {
+      border:1px solid var(--line); background:transparent; color:var(--ink);
+      padding:8px 10px; border-radius:6px; cursor:pointer; font-size:12.5px; transition:all 0.2s ease;
+    }
+    .tabbtn.active { background:rgba(232,232,232,0.08); border-color:var(--line); color:var(--ink); box-shadow:none; }
+    .tabpanel { display:none; }
+    .tabpanel.active { display:block; }
+
+    .subtabs { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 12px; }
+    .subtabbtn {
+      border:1px solid var(--line); background:transparent; color:var(--ink);
+      padding:7px 10px; border-radius:6px; cursor:pointer; font-size:12px; transition:all 0.2s ease;
+    }
+    .subtabbtn.active { background:rgba(232,232,232,0.08); border-color:var(--line); color:var(--ink); box-shadow:none; }
+    .subpanel { display:none; }
+    .subpanel.active { display:block; }
+
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .grid3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+
+    .row { margin-bottom:10px; }
+    .fieldlabel { display:flex; align-items:center; gap:8px; margin:0 0 6px; }
+    label { font-size:12px; color:var(--muted); }
+
+    input, select, textarea {
+      width:100%; box-sizing:border-box;
+      background:rgba(0,0,0,0.3); border:1px solid var(--line); color:var(--ink);
+      border-radius:6px; padding:10px 10px; font-size:13px; outline:none;
+      transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    /* ensure dropdown menus stay dark for readability */
+    select option {
+      background:var(--panel);
+      color:var(--ink);
+    }
+
+    textarea { min-height:110px; resize:vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--line); box-shadow: 0 0 8px rgba(232,232,232,0.15); }
+
+    input.filled, select.filled, textarea.filled{
+      background: rgba(59,237,130,0.08);
+      border-color: #3bed82;
+      box-shadow: 0 0 10px rgba(59,237,130,0.25), inset 0 0 1px rgba(59,237,130,0.15);
+      color: #ffffff;
+    }
+    input:disabled, select:disabled, textarea:disabled{
+      background:rgba(136,136,136,0.1);
+      opacity:.6;
+      color:#555555;
+    }
+    input:disabled.filled, select:disabled.filled, textarea:disabled.filled{
+      background:rgba(136,136,136,0.1);
+      border-color:var(--line);
+      box-shadow:none;
+    }
+
+    .help { margin-top:6px; font-size:11px; color:var(--muted); line-height:1.35; }
+
+    .btnbar { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    button {
+      border:1px solid var(--line); background:rgba(232,232,232,0.05); color:var(--ink);
+      padding:10px 12px; border-radius:6px; cursor:pointer; font-size:13px; transition:all 0.2s ease;
+    }
+    button.primary { background:rgba(232,232,232,0.1); border-color:var(--line); color:var(--ink); }
+    button:hover { background:rgba(232,232,232,0.1); }
+    button.primary:hover { background:rgba(232,232,232,0.15); }
+
+    .out {
+      width:100%; min-height:280px; white-space:pre; font-family: "Courier New", ui-monospace, SFMono-Regular, monospace;
+      background:rgba(0,0,0,0.5); border:1px solid var(--line); border-radius:6px; padding:12px;
+      color:var(--ink); line-height:1.35; font-size:12.5px; box-shadow:inset 0 0 8px rgba(0,0,0,0.3);
+    }
+
+    .pill { display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:6px; color:var(--muted); font-size:11px; background:transparent; }
+    footer { padding:10px 14px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; }
+
+    .info {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:18px; height:18px; border-radius:6px;
+      border:1px solid var(--line); background:rgba(232,232,232,0.05); color:var(--ink);
+      font-size:12px; cursor:help; user-select:none; box-shadow:none;
+    }
+    .warn { color: var(--danger); font-size: 11px; margin-top:6px; line-height:1.35; }
+    hr { border:0; border-top:1px solid var(--line); margin:12px 0; }
+
+    .miniBtn{
+      border:1px solid var(--line); background:transparent; color:var(--ink);
+      padding:4px 8px; border-radius:6px; cursor:pointer; font-size:12px;
+      line-height:1; margin-left:auto; transition:all 0.2s ease;
+    }
+    .miniBtn:hover{ background:rgba(232,232,232,0.08); }
+
+    dialog{
+      border:1px solid var(--line);
+      border-radius:6px;
+      background:var(--panel);
+      color:var(--ink);
+      width:min(860px, 95vw);
+      padding:0;
+      box-shadow:0 8px 32px rgba(0,0,0,0.6);
+    }
+    dialog::backdrop{ background: rgba(0,0,0,.8); }
+    .dlgHead{ padding:12px 14px; border-bottom:1px solid var(--line); background:rgba(232,232,232,0.02); color:var(--ink); }
+    .dlgBody{ padding:12px 14px; }
+    .dlgFoot{ padding:12px 14px; border-top:1px solid var(--line); display:flex; gap:10px; justify-content:flex-end; }
+    #importText{ min-height:260px; }
+
+    /* blur only the rest of the page when splash is active, keep splash content sharp */
+    body.splash-active > :not(#splashScreen) { filter:blur(4px); pointer-events:none; }
+    #splashScreen { 
+      position:fixed; top:0; left:0; right:0; bottom:0; 
+      background:linear-gradient(135deg, rgba(10,13,21,0.5) 0%, rgba(15,19,24,0.5) 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      z-index:9999; opacity:1; transition:opacity 0.6s ease;
+    }
+    #splashScreen.hidden { opacity:0; pointer-events:none; }
+    #splashScreen h1 { 
+      font-size:56px; font-weight:bold; letter-spacing:2px; color:var(--ink); 
+      margin:0 0 8px 0; text-shadow:0 0 20px rgba(232,232,232,0.1);
+    }
+    #splashScreen .subtitle { 
+      font-size:18px; color:var(--muted); margin:0 0 40px 0; 
+      letter-spacing:1px;
+    }
+    #connectBtn { 
+      border:2px solid var(--line); background:rgba(232,232,232,0.08); color:var(--ink);
+      padding:14px 32px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold;
+      transition:all 0.3s ease; font-family:inherit; letter-spacing:1px;
+    }
+    #connectBtn:hover { 
+      background:rgba(232,232,232,0.15); border-color:var(--accent);
+      box-shadow:0 0 20px rgba(232,232,232,0.2);
+    }
+    /* credit text shown below connect button */
+    #splashScreen #credits {
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+<div id="splashScreen">
+  <h1>1eROC ATO GENERATOR</h1>
+  <div class="subtitle">TASKING SYSTEM</div>
+  <button id="connectBtn">CONNECT</button>
+  <div id="credits">By [1eROC] Seluj</div>
+</div>
+
+<header>
+  <h1>ATO Generator (USMTF) — v3.3</h1>
+  <p>HEADER / GRND TGT / TASKING · conversion locale → ZULU · multi-patrouilles · Target Type + PV CHAR (structure/pv/roof) · IFF auto (octal) · sortie “decode” plain language.</p>
+</header>
+
+<div class="wrap">
+  <section class="card">
+    <h2>Entrées</h2>
+
+    <div class="tabs">
+      <button class="tabbtn active" data-tab="tabHeader" type="button">HEADER</button>
+      <button class="tabbtn" data-tab="tabGrnd" type="button">GRND TGT</button>
+      <button class="tabbtn" data-tab="tabTasking" type="button">TASKING</button>
+    </div>
+
+    <div class="body">
+
+      <!-- ================= HEADER ================= -->
+      <div id="tabHeader" class="tabpanel active">
+
+        <div class="row"><span class="pill">Date / Mois / Fuseau</span></div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="missionDate">Date de mission</label>
+              <span class="info" title="Date de référence pour dériver automatiquement le mois (MSGID) et l’année. Ex: 2010-03-06.">ⓘ</span>
+            </div>
+            <input id="missionDate" type="date" />
+            <div class="help">Ex : 2010-03-06</div>
+          </div>
+
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tz">Fuseau horaire (IANA)</label>
+              <span class="info" title="Les saisies 'locales' (datetime-local) sont interprétées dans ce fuseau et converties en ZULU. Ex: Afghanistan = Asia/Kabul.">ⓘ</span>
+            </div>
+            <select id="tz">
+              <option value="" selected>(sélectionner)</option>
+              <option value="Europe/Paris">France (Europe/Paris)</option>
+              <option value="Europe/London">UK (Europe/London)</option>
+              <option value="Europe/Berlin">Germany (Europe/Berlin)</option>
+              <option value="Europe/Rome">Italy (Europe/Rome)</option>
+              <option value="Europe/Madrid">Spain (Europe/Madrid)</option>
+              <option value="Europe/Brussels">Belgium (Europe/Brussels)</option>
+              <option value="Europe/Amsterdam">Netherlands (Europe/Amsterdam)</option>
+              <option value="Europe/Zurich">Switzerland (Europe/Zurich)</option>
+              <option value="Europe/Warsaw">Poland (Europe/Warsaw)</option>
+              <option value="Europe/Athens">Greece (Europe/Athens)</option>
+
+              <option value="Asia/Dubai">UAE (Asia/Dubai)</option>
+              <option value="Asia/Riyadh">Saudi (Asia/Riyadh)</option>
+              <option value="Asia/Baghdad">Iraq (Asia/Baghdad)</option>
+              <option value="Asia/Tehran">Iran (Asia/Tehran)</option>
+              <option value="Asia/Kabul">Afghanistan (Asia/Kabul)</option>
+              <option value="Asia/Karachi">Pakistan (Asia/Karachi)</option>
+
+              <option value="America/New_York">USA East (America/New_York)</option>
+              <option value="America/Chicago">USA Central (America/Chicago)</option>
+              <option value="America/Denver">USA Mountain (America/Denver)</option>
+              <option value="America/Los_Angeles">USA West (America/Los_Angeles)</option>
+
+              <option value="UTC">UTC</option>
+            </select>
+            <div class="help">Astuce : fixe d’abord le fuseau, puis saisis toutes les dates/heures en “local”.</div>
+          </div>
+        </div>
+
+        <div class="grid3">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="msgMonth">Mois MSGID (auto)</label>
+              <span class="info" title="Dérivé de la date de mission. Ex: 2010-03-06 → MAR.">ⓘ</span>
+            </div>
+            <input id="msgMonth" disabled />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="msgYear">Année (auto)</label>
+              <span class="info" title="Dérivée de la date de mission.">ⓘ</span>
+            </div>
+            <input id="msgYear" disabled />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="qualifier">Qualifier</label>
+              <span class="info" title="Si tu publies un changement d’ATO, mettre CHG et le numéro de changement. Ex: CHG/1.">ⓘ</span>
+            </div>
+            <select id="qualifier">
+              <option value="">(vide)</option>
+              <option value="CHG">CHG</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="chgno">CHG #</label>
+              <span class="info" title="Numéro du changement si Qualifier=CHG. Ex: 1.">ⓘ</span>
+            </div>
+            <input id="chgno" />
+            <div class="help">Ex : 1</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="oper">OPER / EXER</label>
+              <span class="info" title="Nom d’opération/exercice (un seul champ). Ex: OEF-A 2010 / TRAINING.">ⓘ</span>
+            </div>
+            <input id="oper" />
+            <div class="help">Ex : OEF-A SURGE TRAINING</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="originator">Originator</label>
+              <span class="info" title="Émetteur du message. Ex: USCENTCOM / JAOC / CAOC.">ⓘ</span>
+            </div>
+            <input id="originator" />
+            <div class="help">Ex : USCENTCOM</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="serial">Message serial</label>
+              <span class="info" title="Auto si vide au moment de 'Générer'. Format: YYYYMMDD + 3 lettres. Ex: 20100227AYZ">ⓘ</span>
+              <button class="miniBtn" type="button" id="genSerialBtn" title="Générer un serial (visible immédiatement)">🎲</button>
+            </div>
+            <input id="serial" />
+            <div class="help">Auto si vide. Ex : 20100227AYZ</div>
+          </div>
+        </div>
+
+        <div class="row"><span class="pill">TIMEFRAM (saisie locale → Z)</span></div>
+
+        <div class="grid3">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tfFromLocal">FROM (local)</label>
+              <span class="info" title="Début de fenêtre ATO (heure locale du fuseau), convertie en Z.">ⓘ</span>
+            </div>
+            <input id="tfFromLocal" type="datetime-local" />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tfToLocal">TO (local)</label>
+              <span class="info" title="Fin de fenêtre ATO, convertie en Z.">ⓘ</span>
+            </div>
+            <input id="tfToLocal" type="datetime-local" />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tfAsofLocal">ASOF (local)</label>
+              <span class="info" title="Horodatage 'as of' (référence de publication), converti en Z.">ⓘ</span>
+            </div>
+            <input id="tfAsofLocal" type="datetime-local" />
+          </div>
+        </div>
+
+        <div class="grid3">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tfFromZ">FROM (Z)</label>
+              <span class="info" title="Auto-calcul en format DTG: DDHHMMZMMMYYYY.">ⓘ</span>
+            </div>
+            <input id="tfFromZ" disabled />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tfToZ">TO (Z)</label>
+              <span class="info" title="Auto-calcul en format DTG: DDHHMMZMMMYYYY.">ⓘ</span>
+            </div>
+            <input id="tfToZ" disabled />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tfAsofZ">ASOF (Z)</label>
+              <span class="info" title="Auto-calcul en format DTG: DDHHMMZMMMYYYY.">ⓘ</span>
+            </div>
+            <input id="tfAsofZ" disabled />
+          </div>
+        </div>
+
+        <div class="warn" id="tzWarn" style="display:none;"></div>
+      </div>
+
+      <!-- ================= GRND TGT ================= -->
+      <div id="tabGrnd" class="tabpanel">
+        <div class="row"><span class="pill">Ground Targets (catalogue)</span></div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="tgtCount">Nombre de cibles</label>
+              <span class="info" title="Crée N sous-onglets TARGET. Les données existantes sont conservées.">ⓘ</span>
+            </div>
+            <input id="tgtCount" type="number" min="1" max="30" value="1" />
+            <div class="help">Ces cibles servent de “bibliothèque” pour GTGTLOC (TASKING) : tu sélectionnes la cible et tu ne renseignes ensuite que TOT/NET/NLT.</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label>Usage</label>
+              <span class="info" title="Dans TASKING > GTGTLOC : sélectionne TARGET (catalogue) pour pré-remplir Name/ID/Type/DMPI/Coord/Datum/Elev/Priority/PV.">ⓘ</span>
+            </div>
+            <input disabled value="TASKING/GTGTLOC : choisir TARGET → préremplissage auto" />
+            <div class="help">Remarque : tu peux toujours overrider manuellement dans GTGTLOC si nécessaire.</div>
+          </div>
+        </div>
+
+        <div id="tgtSubtabs" class="subtabs"></div>
+        <div id="tgtPanels"></div>
+      </div>
+
+      <!-- ================= TASKING ================= -->
+      <div id="tabTasking" class="tabpanel">
+        <div class="row"><span class="pill">Patrouilles</span></div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="patrolCount">Nombre de patrouilles</label>
+              <span class="info" title="Crée N sous-onglets PATROL et génère N blocs mission. Les données existantes sont conservées.">ⓘ</span>
+            </div>
+            <input id="patrolCount" type="number" min="1" max="12" value="1" />
+            <div class="help">Augmenter/diminuer n’efface pas ce que tu as déjà saisi.</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label>Rappel USMTF</label>
+              <span class="info" title="Chaque mission doit contenir AMSNDAT + MSNACFT + exactement un set (AMSNLOC ou GTGTLOC ou RECCEDAT).">ⓘ</span>
+            </div>
+            <input disabled value="AMSNDAT + MSNACFT + (AMSNLOC | GTGTLOC | RECCEDAT)" />
+            <div class="help">Le bouton Générer n’efface jamais les champs : il ne fait que produire la sortie.</div>
+          </div>
+        </div>
+
+        <div id="patrolSubtabs" class="subtabs"></div>
+        <div id="patrolPanels"></div>
+      </div>
+
+      <div class="btnbar">
+        <button class="primary" id="btnGen" type="button">Générer</button>
+        <button id="btnCopy" type="button">Copier</button>
+        <button id="btnImport" type="button">IMPORT</button>
+        <button id="btnClear" type="button">Vider tous les champs</button>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Sortie</h2>
+    <div class="body">
+      <label>ATO (copier-coller)</label>
+      <textarea id="out" class="out" spellcheck="false"></textarea>
+
+      <div style="height:10px"></div>
+
+      <label>Decode (copier-coller)</label>
+      <textarea id="outExplain" class="out" spellcheck="false" style="min-height:260px"></textarea>
+    </div>
+    <footer>
+      Génération conforme aux blocs USMTF (header + mission blocks). Target Type codé, PV CHAR codé (structure/pv/roof), IFF auto (octal).
+    </footer>
+  </section>
+</div>
+
+<dialog id="importDlg">
+  <div class="dlgHead">
+    <strong>IMPORT ATO</strong>
+    <div style="color:var(--muted); font-size:12px; margin-top:6px; line-height:1.35;">
+      Colle ici un ATO issu de cet outil (ou un format proche). Le parseur extrait OPER/MSGID/TIMEFRAM et les blocs TASKUNIT/AMSNDAT/MSNACFT + set.
+    </div>
+  </div>
+  <div class="dlgBody">
+    <textarea id="importText" placeholder="Colle ton ATO ici..."></textarea>
+    <div class="help">
+      Note : si certains champs ne sont pas présents dans le texte importé, ils restent inchangés.
+    </div>
+  </div>
+  <div class="dlgFoot">
+    <button id="btnImportCancel" type="button">Annuler</button>
+    <button id="btnImportApply" class="primary" type="button">Importer</button>
+  </div>
+</dialog>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  const MISSION_TYPES = [
+    "CAP","BARCAP","DCA","OCA","TARCAP","HAVCAP","RESCAP","MIGCAP","SWEEP",
+    "CAS","SCAR","AI","BAI","DEEP","STRIKE","PGSTRIKE","DEAD","SEAD","AR","XCAS","FAC(A)","JTAC-COORD",
+    "ISR","IMINT","SIGINT","ELINT","MASINT","RECCE","EO/IR RECCE","STARE","WARP","BDA",
+    "SAR","CSAR","PR","SOF INFIL/EXFIL","SARD","PSYOPS AIR","SHOW OF FORCE","SHOW OF PRESENCE",
+    "AAR / AR","TANKER","AT","Airlift / Strategic Airlift","TACTICAL AIRLIFT","CASEVAC","MEDEVAC","RE-SUPPLY","CARGO DROP / CDS",
+    "ESCORT","FTR-ESCORT","STRIKE-ESCORT","SOF-ESCORT","AAR-ESCORT / HAVCAP",
+    "JTAC"
+  ];
+
+  const MONTHS_3 = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+  // --- TARGET TYPE (Category/Subcategory) code => full label ---
+  const TARGET_TYPE_LABEL = {
+    "11": "Headquarters",
+    "12": "Command and Control (C2) Centers",
+    "13": "Airfields",
+    "14": "Army Bases/Installations",
+    "15": "Naval Installations",
+    "16": "Ammunition Depots",
+    "17": "Training Areas",
+    "18": "Storage and Maintenance Facilities",
+    "19": "Military Hospitals",
+
+    "21": "Energy Distribution Network",
+    "22": "Energy Storage",
+    "23": "Power Plants",
+    "24": "Oil Refineries",
+    "25": "Gas Facilities",
+    "26": "Geothermal Facilities",
+    "27": "Renewable Energy (Solar, Wind)",
+    "28": "Water Distribution",
+    "29": "Water Treatment",
+
+    "31": "Airports",
+    "32": "Seaports",
+    "33": "Rail Facilities",
+    "34": "Bridges",
+    "35": "Roadways",
+    "36": "Terminals (Bus, Ferry, etc.)",
+    "37": "Tunnels",
+    "38": "Rail Yards",
+    "39": "Logistics Hubs",
+
+    "41": "Communication Centers",
+    "42": "Radar Stations",
+    "43": "Satellite Communications Stations",
+    "44": "Signal Processing Facilities",
+    "45": "Electronic Warfare Facilities",
+    "46": "Tactical Communication Networks",
+    "47": "Fiber Optic Communication Networks",
+    "48": "Cyber Operations Centers",
+    "49": "Surveillance and Reconnaissance Systems",
+
+    "51": "Defense Industrial Base",
+    "52": "Chemical Processing Plants",
+    "53": "Energy Equipment Manufacturing",
+    "54": "Critical Manufacturing",
+    "55": "Steel and Heavy Industry",
+    "56": "Food Processing Plants",
+    "57": "Pharmaceutical Manufacturing",
+    "58": "Transportation Manufacturing",
+    "59": "Electronics and Precision Manufacturing",
+
+    "61": "Government Buildings",
+    "62": "Schools and Universities",
+    "63": "Financial Institutions",
+    "64": "Cultural Institutions",
+    "65": "Civilian Government Services",
+    "66": "Public Safety and Emergency Services",
+    "67": "Critical Urban Infrastructure",
+    "68": "Public Health and Welfare Facilities",
+    "69": "Justice and Law Enforcement Facilities",
+
+    "71": "Aircraft",
+    "72": "Ground Vehicles",
+    "73": "Naval Vessels",
+    "74": "Air Defense",
+    "75": "Missiles and Launchers",
+    "76": "Combat Support Systems",
+    "77": "Weapons of Mass Destruction",
+    "78": "Tactical C4ISR Systems",
+    "79": "Military Robotics and Autonomous Systems",
+
+    "81": "Natural Resources",
+    "82": "Cultural and Historical Sites",
+    "83": "Religious Sites",
+    "84": "National Parks",
+    "85": "Archaeological Sites",
+    "86": "Protected Wildlife Areas",
+    "87": "Forests and Woodlands",
+    "88": "Strategic Water Resources",
+    "89": "Coastal and Marine Ecosystems",
+
+    "91": "Research and Development Facilities",
+    "92": "Biological Weapons Facilities",
+    "93": "Chemical Weapons Facilities",
+    "94": "Nuclear Weapons Facilities",
+    "95": "Space Launch Facilities",
+    "96": "Data Centers (Intelligence and Military)",
+    "97": "Strategic Technology R&D Facilities",
+    "98": "Advanced Manufacturing Facilities",
+    "99": "High-Security Storage Facilities"
+  };
+
+  function targetTypeOptionsHTML(){
+    const codes = Object.keys(TARGET_TYPE_LABEL).sort();
+    return [
+      `<option value=""></option>`,
+      ...codes.map(code => `<option value="${code}">${code} — ${TARGET_TYPE_LABEL[code]}</option>`)
+    ].join("");
+  }
+
+  // --- structure type codes ---
+  const STRUCTURE_TYPE_LABEL = {
+    "AG":"Above Ground",
+    "B":"Bridge",
+    "BA":"Bunker Adit",
+    "BN":"Bunker",
+    "C":"Culvert",
+    "CP":"Choke Point",
+    "FS":"Fence Secured",
+    "HB":"High Bay",
+    "OA":"Open Area",
+    "PUG":"Partially Under Ground",
+    "RV":"Revetted",
+    "T":"Tunnel",
+    "TA":"Tunnel Adit",
+    "UG":"Under Ground"
+  };
+
+  // --- PV codes ---
+  const PV_CODE_LABEL = {
+    "AD":"Adobe Walls",
+    "HCF":"Heavy Composite Framed",
+    "LCF":"Light Composite Framed",
+    "LOG1":"Single-Story Load-bearing Wall - Log and Timber Walls",
+    "LOG2":"Multistory Load-Bearing Wall - Log and Timber Walls",
+    "MON":"Monumental Masonry Load-Bearing Walls",
+    "MS":"Multiple Story",
+    "RC":"Reinforced Concrete",
+    "RCLF":"RC Light Framed Columns and Roof Slab or Arch",
+    "RCSS":"RC Stressed Skin or Shell",
+    "RCTC":"RC T-Columns",
+    "RCVLF":"RC Very Light Framed Columns/Trusses/Beams",
+    "SF":"Steel Framed",
+    "SS":"Single Story",
+    "VLWF":"Very Light Wood Framed"
+  };
+
+  // --- roof codes ---
+  const ROOF_CODE_LABEL = {
+    "C":"Concrete",
+    "M":"Metal",
+    "S":"Shingled",
+    "U":"Unknown",
+    "W":"Wood"
+  };
+
+  function structureTypeOptionsHTML(selected){
+    const codes = Object.keys(STRUCTURE_TYPE_LABEL).sort();
+    return [
+      `<option value=""></option>`,
+      ...codes.map(c => `<option value="${c}"${selected===c?" selected":""}>${c} — ${STRUCTURE_TYPE_LABEL[c]}</option>`)
+    ].join("");
+  }
+
+  function pvCodeOptionsHTML(selected){
+    const codes = Object.keys(PV_CODE_LABEL).sort();
+    return [
+      `<option value=""></option>`,
+      ...codes.map(c => `<option value="${c}"${selected===c?" selected":""}>${c} — ${PV_CODE_LABEL[c]}</option>`)
+    ].join("");
+  }
+
+  function roofCodeOptionsHTML(selected){
+    const codes = Object.keys(ROOF_CODE_LABEL).sort();
+    return [
+      `<option value=""></option>`,
+      ...codes.map(c => `<option value="${c}"${selected===c?" selected":""}>${c} — ${ROOF_CODE_LABEL[c]}</option>`)
+    ].join("");
+  }
+
+  function normDash(v){ v = (v ?? "").toString().trim(); return v.length ? v : "-"; }
+  function normEmpty(v){ v = (v ?? "").toString().trim(); return v.length ? v : ""; }
+
+  function parseLocalInput(dtLocalStr){
+    if (!dtLocalStr) return null;
+    const [datePart, timePart] = dtLocalStr.split("T");
+    if (!datePart || !timePart) return null;
+    const [y, m, d] = datePart.split("-").map(Number);
+    const [hh, mm] = timePart.split(":").map(Number);
+    if (![y,m,d,hh,mm].every(Number.isFinite)) return null;
+    return { y, m, d, hh, mm };
+  }
+
+  function tzOffsetMinutesAt(dateUTC, timeZone){
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit",
+      hour12:false
+    });
+    const parts = fmt.formatToParts(dateUTC).reduce((acc,p)=>{ if (p.type !== "literal") acc[p.type]=p.value; return acc; }, {});
+    const asIfUTC = Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour),
+      Number(parts.minute),
+      Number(parts.second)
+    );
+    return Math.round((asIfUTC - dateUTC.getTime()) / 60000);
+  }
+
+  function localInTZ_to_UTCDate(dtLocalStr, timeZone){
+    const c = parseLocalInput(dtLocalStr);
+    if (!c) return null;
+    let guessUTC = new Date(Date.UTC(c.y, c.m-1, c.d, c.hh, c.mm, 0));
+    for (let i=0; i<3; i++){
+      const offMin = tzOffsetMinutesAt(guessUTC, timeZone);
+      const corrected = new Date(Date.UTC(c.y, c.m-1, c.d, c.hh, c.mm, 0) - offMin*60000);
+      if (Math.abs(corrected.getTime() - guessUTC.getTime()) < 1000) { guessUTC = corrected; break; }
+      guessUTC = corrected;
+    }
+    return guessUTC;
+  }
+
+  function formatDTG_Z(dateUTC){
+    if (!dateUTC) return "";
+    const dd = String(dateUTC.getUTCDate()).padStart(2,"0");
+    const hh = String(dateUTC.getUTCHours()).padStart(2,"0");
+    const mm = String(dateUTC.getUTCMinutes()).padStart(2,"0");
+    const mon = MONTHS_3[dateUTC.getUTCMonth()];
+    const yyyy = dateUTC.getUTCFullYear();
+    return `${dd}${hh}${mm}Z${mon}${yyyy}`;
+  }
+
+  function formatDTG_Z_short(dateUTC){
+    if (!dateUTC) return "";
+    const dd = String(dateUTC.getUTCDate()).padStart(2,"0");
+    const hh = String(dateUTC.getUTCHours()).padStart(2,"0");
+    const mm = String(dateUTC.getUTCMinutes()).padStart(2,"0");
+    const mon = MONTHS_3[dateUTC.getUTCMonth()];
+    return `${dd}${hh}${mm}Z${mon}`;
+  }
+
+  function updateMissionMonthFromDate(){
+    const d = $("missionDate").value;
+    if (!d) { $("msgMonth").value = ""; $("msgYear").value = ""; return; }
+    const [yy, mm] = d.split("-").map(Number);
+    if (!Number.isFinite(yy) || !Number.isFinite(mm)) { $("msgMonth").value=""; $("msgYear").value=""; return; }
+    $("msgMonth").value = MONTHS_3[mm-1] || "";
+    $("msgYear").value = String(yy);
+  }
+
+  function updateTimeframZulu(){
+    const tz = $("tz").value;
+    if (!tz){
+      $("tfFromZ").value = "";
+      $("tfToZ").value = "";
+      $("tfAsofZ").value = "";
+      $("tzWarn").style.display = "block";
+      $("tzWarn").textContent = "Alerte: sélectionne un fuseau IANA pour activer la conversion en ZULU.";
+      const n = getPatrolCount();
+      for (let i=1; i<=n; i++) updatePatrolZulu(i);
+      refreshFilledStyles();
+      return;
+    }
+
+    const fromUTC = localInTZ_to_UTCDate($("tfFromLocal").value, tz);
+    const toUTC   = localInTZ_to_UTCDate($("tfToLocal").value, tz);
+    const asofUTC = localInTZ_to_UTCDate($("tfAsofLocal").value, tz);
+
+    $("tfFromZ").value = fromUTC ? formatDTG_Z(fromUTC) : "";
+    $("tfToZ").value   = toUTC ? formatDTG_Z(toUTC) : "";
+    $("tfAsofZ").value = asofUTC ? formatDTG_Z(asofUTC) : "";
+
+    try {
+      new Intl.DateTimeFormat("en-US", {timeZone: tz}).format(new Date());
+      $("tzWarn").style.display = "none";
+    } catch(e){
+      $("tzWarn").style.display = "block";
+      $("tzWarn").textContent = "Alerte: ce navigateur ne supporte pas ce fuseau IANA. Utilise Chrome/Edge/Firefox récent.";
+    }
+
+    const n = getPatrolCount();
+    for (let i=1; i<=n; i++) updatePatrolZulu(i);
+    refreshFilledStyles();
+  }
+
+  function updatePatrolZulu(i){
+    const tz = $("tz").value;
+    const startUTC = tz ? localInTZ_to_UTCDate($(`p${i}_tStartLocal`)?.value, tz) : null;
+    const stopUTC  = tz ? localInTZ_to_UTCDate($(`p${i}_tStopLocal`)?.value, tz) : null;
+    if ($("p"+i+"_tStartZ")) $("p"+i+"_tStartZ").value = startUTC ? formatDTG_Z_short(startUTC) : "";
+    if ($("p"+i+"_tStopZ")) $("p"+i+"_tStopZ").value  = stopUTC ? formatDTG_Z_short(stopUTC) : "";
+    if ($(`p${i}_tStartZFull`)) $(`p${i}_tStartZFull`).value = startUTC ? formatDTG_Z(startUTC) : "";
+    if ($(`p${i}_tStopZFull`))  $(`p${i}_tStopZFull`).value  = stopUTC ? formatDTG_Z(stopUTC) : "";
+  }
+
+  function setActiveTab(tabId){
+    document.querySelectorAll(".tabbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+    document.querySelectorAll(".tabpanel").forEach(p => p.classList.toggle("active", p.id === tabId));
+  }
+
+  function snapshotInputs(){
+    const snap = {};
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+      if (!el.id) return;
+      if (el.disabled) return;
+      snap[el.id] = el.value;
+    });
+    return snap;
+  }
+  function restoreInputs(snap){
+    if (!snap) return;
+    Object.entries(snap).forEach(([id, val]) => {
+      const el = $(id);
+      if (!el) return;
+      if (el.disabled) return;
+      el.value = val;
+    });
+  }
+
+  function getPatrolCount(){
+    const n = parseInt($("patrolCount").value || "1", 10);
+    return Math.max(1, Math.min(12, n));
+  }
+
+  function getTargetCount(){
+    const n = parseInt($("tgtCount").value || "1", 10);
+    return Math.max(1, Math.min(30, n));
+  }
+
+  function missionTypeSelectHTML(id, tooltip){
+    const options = MISSION_TYPES.map(t => `<option value="${t}">${t}</option>`).join("");
+    return `
+      <div class="fieldlabel">
+        <label for="${id}">${id.includes("secondary") ? "Secondary mission type" : "Primary mission type"}</label>
+        <span class="info" title="${tooltip}">ⓘ</span>
+      </div>
+      <select id="${id}">
+        <option value=""></option>
+        ${options}
+      </select>
+      <div class="help">Ex : CAS / SCAR / STRIKE / ISR / SHOW OF FORCE</div>
+    `;
+  }
+
+  function randAlphaNum(len){
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+    let out = "";
+    const a = new Uint32Array(len);
+    crypto.getRandomValues(a);
+    for (let i=0; i<len; i++) out += chars[a[i] % chars.length];
+    return out;
+  }
+
+  function randLetters(len){
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXY"; // pas I/O
+    const a = new Uint32Array(len);
+    crypto.getRandomValues(a);
+    let out = "";
+    for (let i=0; i<len; i++) out += chars[a[i] % chars.length];
+    return out;
+  }
+
+  function genSerialFromMissionDate(){
+    const d = $("missionDate").value;
+    if (!d) return "";
+    const [yyyy, mm, dd] = d.split("-");
+    if (!yyyy || !mm || !dd) return "";
+    return `${yyyy}${mm}${dd}${randLetters(3)}`;
+  }
+
+  // IFF: prefix 2/3/4 + 4 digits octal (0..7)
+  function genIffCode(){
+    const codes = ["2","3","4"];
+    const a = new Uint32Array(5);
+    crypto.getRandomValues(a);
+    const prefix = codes[a[0] % codes.length];
+    let digits = "";
+    for (let i=1; i<=4; i++) digits += String(a[i] % 8);
+    return prefix + digits; // ex: 24573 => IFF 2 / 4573
+  }
+
+  function yymmdd(){
+    const d = $("missionDate").value;
+    if (!d) return "000000";
+    const [y,m,dd] = d.split("-");
+    return `${y.slice(2)}${m}${dd}`;
+  }
+
+  function genMissionNumber(i){
+    return `AN${yymmdd()}-P${String(i).padStart(2,"0")}-${randAlphaNum(4)}`;
+  }
+
+  function genTargetId(i){
+    return `ID:TG-${yymmdd()}-P${String(i).padStart(2,"0")}-${randAlphaNum(5)}`;
+  }
+
+  function genGroundTargetId(i){
+    return `ID:TG-${yymmdd()}-G${String(i).padStart(2,"0")}-${randAlphaNum(5)}`;
+  }
+
+  // ======== GRND TARGET CATALOGUE ========
+  function getTargetLabel(i){
+    const name = normEmpty($(`t${i}_name`)?.value);
+    // ID input is prefixed "gt" (ground target) in the DOM, not just "t"
+    const id = normEmpty($(`gt${i}_id`)?.value);
+    if (name && id) return `${i} — ${name} (${id})`;
+    if (name) return `${i} — ${name}`;
+    if (id) return `${i} — ${id}`;
+    return `${i} — (vide)`;
+  }
+
+  function targetCatalogOptionsHTML(selectedValue){
+    const n = getTargetCount();
+    const opts = [`<option value=""></option>`];
+    for (let i=1; i<=n; i++){
+      const v = `T${i}`;
+      const label = getTargetLabel(i);
+      const sel = (selectedValue === v) ? ` selected` : ``;
+      opts.push(`<option value="${v}"${sel}>${label}</option>`);
+    }
+    return opts.join("");
+  }
+
+  function refreshTargetCatalogAllSelects(){
+    const nP = getPatrolCount();
+    for (let p=1; p<=nP; p++){
+      const sel = $(`p${p}_gt_catalog`);
+      if (!sel) continue;
+      const keep = sel.value;
+      sel.innerHTML = targetCatalogOptionsHTML(keep);
+      sel.value = keep;
+    }
+    refreshFilledStyles();
+  }
+
+  function applyTargetToPatrol(patrolIndex, targetIndex){
+    const t = targetIndex;
+
+    const name = normEmpty($(`t${t}_name`)?.value);
+    // the ground-target ID field uses "gt" prefix, so pull from there
+    const tid  = normEmpty($(`gt${t}_id`)?.value);
+    const ttype = normEmpty($(`t${t}_type`)?.value);
+    const dmpiDesc = normEmpty($(`t${t}_dmpiDesc`)?.value);
+    const dmpiCoord = normEmpty($(`t${t}_dmpiCoord`)?.value);
+    const geodatum = normEmpty($(`t${t}_geodatum`)?.value);
+    const elev = normEmpty($(`t${t}_elev`)?.value);
+    const pri = normEmpty($(`t${t}_priority`)?.value);
+    const struct = normEmpty($(`t${t}_pv_struct`)?.value);
+    const pv = normEmpty($(`t${t}_pvchar`)?.value);
+    const roof = normEmpty($(`t${t}_pv_roof`)?.value);
+    // combined code (skip blanks)
+    const composite = [struct, pv, roof].filter(x => x).join("-");
+
+    if ($(`p${patrolIndex}_gt_name`)) $(`p${patrolIndex}_gt_name`).value = name;
+    if ($(`p${patrolIndex}_gt_id`)) $(`p${patrolIndex}_gt_id`).value = tid;
+    if ($(`p${patrolIndex}_gt_type`)) $(`p${patrolIndex}_gt_type`).value = ttype;
+    if ($(`p${patrolIndex}_gt_dmpiDesc`)) $(`p${patrolIndex}_gt_dmpiDesc`).value = dmpiDesc;
+    if ($(`p${patrolIndex}_gt_dmpiCoord`)) $(`p${patrolIndex}_gt_dmpiCoord`).value = dmpiCoord;
+    if ($(`p${patrolIndex}_gt_geodatum`)) $(`p${patrolIndex}_gt_geodatum`).value = geodatum;
+    if ($(`p${patrolIndex}_gt_elev`)) $(`p${patrolIndex}_gt_elev`).value = elev;
+    if ($(`p${patrolIndex}_gt_priority`)) $(`p${patrolIndex}_gt_priority`).value = pri;
+    // patrol side will hold separate selects for struct/pv/roof
+    if ($(`p${patrolIndex}_gt_struct`)) $(`p${patrolIndex}_gt_struct`).value = struct;
+    if ($(`p${patrolIndex}_gt_pvchar`)) $(`p${patrolIndex}_gt_pvchar`).value = pv;
+    if ($(`p${patrolIndex}_gt_roof`)) $(`p${patrolIndex}_gt_roof`).value = roof;
+    // also update composite field if we surface one (optional)
+    const compEl = $(`p${patrolIndex}_gt_pvcomposite`);
+    if (compEl) compEl.value = composite;
+
+    refreshFilledStyles();
+  }
+
+  function makeTargetPanel(i){
+    const div = document.createElement("div");
+    div.className = "subpanel";
+    div.id = `tgtPanel${i}`;
+
+    div.innerHTML = `
+      <div class="row"><span class="pill">TARGET ${i}</span></div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="t${i}_name">Target name</label>
+            <span class="info" title="Nom de la cible/objectif. Ex: HME WORKSHOP / TRAINING CAMP.">ⓘ</span>
+          </div>
+          <input id="t${i}_name" class="tgtField" />
+          <div class="help">Ex : HME WORKSHOP</div>
+        </div>
+
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="gt${i}_id">Target ID</label>
+            <span class="info" title="Identifiant cible. Bouton 🎲 pour génération immédiate.">ⓘ</span>
+            <button class="miniBtn" type="button" id="gt${i}_genTargetId" title="Générer Target ID">🎲</button>
+          </div>
+
+          <input id="gt${i}_id" />
+
+          <div class="help">
+            Ex : ID:TG-240512-G01-ABCDE
+          </div>
+        </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="t${i}_type">Target type (CAT/SUB)</label>
+            <span class="info" title="Code issu du PDF. La valeur stockée est le code.">ⓘ</span>
+          </div>
+          <select id="t${i}_type" class="tgtField">
+            ${targetTypeOptionsHTML()}
+          </select>
+          <div class="help">Ex : 14 — Army Bases/Installations</div>
+        </div>
+
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="t${i}_dmpiDesc">DMPI desc</label>
+            <span class="info" title="Description DMPI. Ex: MAIN BUILDING / COMPOUND CENTER.">ⓘ</span>
+          </div>
+          <input id="t${i}_dmpiDesc" class="tgtField" />
+          <div class="help">Ex : MAIN BUILDING</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="t${i}_dmpiCoord">DMPI coord</label>
+            <span class="info" title="Coordonnées DMPI. Ex: 345512N0691234E.">ⓘ</span>
+          </div>
+          <input id="t${i}_dmpiCoord" class="tgtField" />
+          <div class="help">Ex : 345512N0691234E</div>
+        </div>
+
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="t${i}_geodatum">Geodetic datum</label>
+            <span class="info" title="Datum, ex: WGS 1984.">ⓘ</span>
+          </div>
+          <input id="t${i}_geodatum" class="tgtField" />
+          <div class="help">Ex : WGS 1984</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="t${i}_elev">Elevation</label>
+            <span class="info" title="Élévation DMPI en FT ou M. Ex: 5200FT.">ⓘ</span>
+          </div>
+          <input id="t${i}_elev" class="tgtField" />
+          <div class="help">Ex : 5200FT</div>
+        </div>
+
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="t${i}_priority">Target priority</label>
+            <span class="info" title="Priorité cible (numérique).">ⓘ</span>
+          </div>
+          <input id="t${i}_priority" class="tgtField" />
+          <div class="help">Ex : 1</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="fieldlabel">
+          <label for="t${i}_pv_struct">Structure type</label>
+          <span class="info" title="Structure Type Code (PDF).">ⓘ</span>
+        </div>
+        <select id="t${i}_pv_struct" class="tgtField">
+          ${structureTypeOptionsHTML()}
+        </select>
+        <div class="help">Ex : BA — Bunker Adit</div>
+      </div>
+      <div class="row">
+        <div class="fieldlabel">
+          <label for="t${i}_pvchar">PV code</label>
+          <span class="info" title="Primary PV code (PDF).">ⓘ</span>
+        </div>
+        <select id="t${i}_pvchar" class="tgtField">
+          ${pvCodeOptionsHTML()}
+        </select>
+        <div class="help">Ex : RC — Reinforced Concrete</div>
+      </div>
+      <div class="row">
+        <div class="fieldlabel">
+          <label for="t${i}_pv_roof">Roof code</label>
+          <span class="info" title="Roof construction code (PDF).">ⓘ</span>
+        </div>
+        <select id="t${i}_pv_roof" class="tgtField">
+          ${roofCodeOptionsHTML()}
+        </select>
+        <div class="help">Ex : C — Concrete</div>
+      </div>
+    `;
+
+    setTimeout(() => {
+      // Refresh catalog dropdowns when any target field changes
+      div.querySelectorAll(".tgtField").forEach(el => {
+        el.addEventListener("input", refreshTargetCatalogAllSelects);
+        el.addEventListener("change", refreshTargetCatalogAllSelects);
+      });
+
+      // generator button inside target panel
+      const gtBtnLocal = div.querySelector(`#gt${i}_genTargetId`);
+      if (gtBtnLocal){
+        gtBtnLocal.addEventListener("click", () => {
+          $(`gt${i}_id`).value = genGroundTargetId(i);
+          refreshFilledStyles();
+        });
+      }
+
+      bindFilledHandlers(div);
+      refreshFilledStyles();
+      refreshTargetCatalogAllSelects();
+    }, 0);
+
+    return div;
+  }
+
+  function setActiveTarget(i){
+    document.querySelectorAll("#tgtSubtabs .subtabbtn").forEach(b => b.classList.toggle("active", b.dataset.ti === String(i)));
+    document.querySelectorAll("#tgtPanels .subpanel").forEach(p => p.classList.toggle("active", p.id === `tgtPanel${i}`));
+  }
+
+  function rebuildTargetUI(){
+    const snap = snapshotInputs();
+
+    const n = getTargetCount();
+    const subtabs = $("tgtSubtabs");
+    const panels = $("tgtPanels");
+    subtabs.innerHTML = "";
+    panels.innerHTML = "";
+
+    for (let i=1; i<=n; i++){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "subtabbtn" + (i===1 ? " active" : "");
+      btn.dataset.ti = String(i);
+      btn.textContent = `TARGET ${i}`;
+      btn.addEventListener("click", () => setActiveTarget(i));
+      subtabs.appendChild(btn);
+
+      const panel = makeTargetPanel(i);
+      if (i===1) panel.classList.add("active");
+      panels.appendChild(panel);
+    }
+
+    restoreInputs(snap);
+
+    bindFilledHandlers(document);
+    refreshFilledStyles();
+    refreshTargetCatalogAllSelects();
+  }
+
+  // ======== PATROL / TASKING ========
+  function ensureGeneratedCodes(i){
+    // Header serial auto
+    const s = $("serial");
+    if (s && !s.value.trim()){
+      const auto = genSerialFromMissionDate();
+      if (auto) s.value = auto;
+    }
+
+    // Mission number auto
+    const m = $(`p${i}_missionNo`);
+    if (m && !m.value.trim()) m.value = genMissionNumber(i);
+
+    // Target ID auto if GTGTLOC and still empty (catalogue may have filled it already)
+    const setKind = $(`p${i}_missionSet`)?.value;
+    if (setKind === "GTGTLOC"){
+      const t = $(`p${i}_gt_id`);
+      if (t && !t.value.trim()) t.value = genTargetId(i);
+    }
+
+    // IFF auto (iff1 only)
+    const iff1 = $(`p${i}_iff1`);
+    if (iff1 && !iff1.value.trim()) iff1.value = genIffCode();
+  }
+
+  function makePatrolPanel(i){
+    const div = document.createElement("div");
+    div.className = "subpanel";
+    div.id = `patrolPanel${i}`;
+
+    div.innerHTML = `
+      <div class="row"><span class="pill">Patrouille ${i}</span></div>
+
+      <div class="row"><span class="pill">TASKUNIT + AMSNDAT</span></div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_taskunit">TASKUNIT (unit)</label>
+            <span class="info" title="Unité taskée. Ex: 1FW / VF-31 / 74FS.">ⓘ</span>
+          </div>
+          <input id="p${i}_taskunit" />
+          <div class="help">Ex : VF-31</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_unitloc">TASKUNIT location (ICAO)</label>
+            <span class="info" title="Localisation de l’unité (ICAO ou nom base). Ex: OAIX / KNFL / CVN.">ⓘ</span>
+          </div>
+          <input id="p${i}_unitloc" />
+          <div class="help">Ex : OAIX</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_missionNo">AMSNDAT Mission Number</label>
+            <span class="info" title="Identifiant mission unique. Si vide, il est auto-généré au moment de Générer.">ⓘ</span>
+            <button class="miniBtn" type="button" id="p${i}_genMissionNo" title="Générer un Mission Number unique">🎲</button>
+          </div>
+          <input id="p${i}_missionNo" />
+          <div class="help">Auto si vide. Ex : AN${yymmdd()}-P0${i}-ABCD</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_amcNo">AMC / Event #</label>
+            <span class="info" title="AMC mission number ou event number si applicable, sinon '-'. Ex: AMC0994XA285.">ⓘ</span>
+          </div>
+          <input id="p${i}_amcNo" />
+          <div class="help">Ex : -</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_pkgid">Package ID</label>
+            <span class="info" title="Identifiant package si la mission appartient à un package. Ex: AAF.">ⓘ</span>
+          </div>
+          <input id="p${i}_pkgid" />
+          <div class="help">Ex : AAF</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_mc">Mission Commander</label>
+            <span class="info" title="Mettre 'MC' si cette mission est mission/package commander, sinon laisser vide.">ⓘ</span>
+          </div>
+          <select id="p${i}_mc">
+            <option value=""></option>
+            <option value="MC">MC</option>
+          </select>
+          <div class="help">Ex : MC</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          ${missionTypeSelectHTML(`p${i}_primaryType`, "Type de mission principal (ANNEXE 1). Ex: CAS, BARCAP, ISR, SCAR…")}
+        </div>
+        <div class="row">
+          ${missionTypeSelectHTML(`p${i}_secondaryType`, "Type secondaire si nécessaire. Ex: ISR + BDA, STRIKE + ESCORT…")}
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_alert">Air Alert Status</label>
+            <span class="info" title="Statut d’alerte air (si utilisé), sinon '-'.">ⓘ</span>
+          </div>
+          <input id="p${i}_alert" />
+          <div class="help">Ex : -</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_depLoc">DEPLOC</label>
+            <span class="info" title="Départ (ICAO/nom/coord) si différent de TASKUNIT. Ex: CVN / OAIX.">ⓘ</span>
+          </div>
+          <input id="p${i}_depLoc" />
+          <div class="help">Ex : CVN</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_arrLoc">ARRLOC</label>
+            <span class="info" title="Recovery / retour (ICAO/nom/coord) si différent de TASKUNIT. Ex: OAIX.">ⓘ</span>
+          </div>
+          <input id="p${i}_arrLoc" />
+          <div class="help">Ex : OAIX</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_extraAmsndatTail">Suffixe AMSNDAT</label>
+            <span class="info" title="Optionnel selon conventions théâtre. Ex: ajouter des champs supplémentaires si ton modèle local le prévoit.">ⓘ</span>
+          </div>
+          <input id="p${i}_extraAmsndatTail" />
+          <div class="help">Ex : (laisser vide)</div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row"><span class="pill">MSNACFT</span></div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_nAcs"># Aircraft</label>
+            <span class="info" title="Nombre d’appareils dans la mission. Ex: 2.">ⓘ</span>
+          </div>
+          <input id="p${i}_nAcs" type="number" min="1" />
+          <div class="help">Ex : 2</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_acType">ACTYP</label>
+            <span class="info" title="Type/modèle avion. Ex: F15C, FA18C, F14, A10C, F16C.">ⓘ</span>
+          </div>
+          <input id="p${i}_acType" />
+          <div class="help">Ex : F14</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_callsign">Callsign</label>
+            <span class="info" title="Callsign abrégé mission. Ex: TOMCAT 01 / EAGLE 21.">ⓘ</span>
+          </div>
+          <input id="p${i}_callsign" />
+          <div class="help">Ex : TOMCAT 01</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_cfg1">Config code (primary)</label>
+            <span class="info" title="Code config primaire (SCL / code local). Si inconnu, '-'.">ⓘ</span>
+          </div>
+          <input id="p${i}_cfg1" />
+          <div class="help">Ex : X4222 / -</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_cfg2">Config code (secondary)</label>
+            <span class="info" title="Code config secondaire si utilisé, sinon '-'.">ⓘ</span>
+          </div>
+          <input id="p${i}_cfg2" />
+          <div class="help">Ex : -</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_datalink">Datalink code</label>
+            <span class="info" title="Code datalink si utilisé, sinon '-'.">ⓘ</span>
+          </div>
+          <input id="p${i}_datalink" />
+          <div class="help">Ex : -</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_iff1">IFF/SIF codes</label>
+            <span class="info" title="Auto si vide au moment de 'Générer'. Format: [2|3|4] + 4 chiffres octaux. Ex: 24573 => IFF2 / 4573">ⓘ</span>
+            <button class="miniBtn" type="button" id="p${i}_genIff" title="Générer un code IFF/SIF (visible immédiatement)">🎲</button>
+          </div>
+          <input id="p${i}_iff1" />
+          <div class="help">Auto si vide. Ex : 24573</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_iff2">IFF/SIF extra</label>
+            <span class="info" title="Champs IFF supplémentaires si nécessaires, sinon '-'.">ⓘ</span>
+          </div>
+          <input id="p${i}_iff2" />
+          <div class="help">Ex : -</div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row"><span class="pill">Mission set (AMSNLOC / GTGTLOC / RECCEDAT)</span></div>
+
+      <div class="row">
+        <div class="fieldlabel">
+          <label for="p${i}_missionSet">Choix du set</label>
+          <span class="info" title="Règle: AMSNDAT + MSNACFT + un seul set. Le set détermine la logique (station / cible / recon).">ⓘ</span>
+        </div>
+        <select id="p${i}_missionSet">
+          <option value="AMSNLOC">AMSNLOC (pas de cible spécifique)</option>
+          <option value="GTGTLOC">GTGTLOC (cible sol)</option>
+          <option value="RECCEDAT">RECCEDAT (reconnaissance)</option>
+        </select>
+        <div class="help">Les champs ne sont jamais effacés : tu peux passer d’un set à l’autre et revenir.</div>
+      </div>
+
+      <div id="p${i}_set_AMSNLOC">
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_tStartLocal">Start (local)</label>
+              <span class="info" title="Début station (local) → AMSNLOC field 1 en Z (DDHHMMZMMM).">ⓘ</span>
+            </div>
+            <input id="p${i}_tStartLocal" type="datetime-local" />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_tStopLocal">Stop (local)</label>
+              <span class="info" title="Fin station (local) → AMSNLOC field 2 en Z (DDHHMMZMMM).">ⓘ</span>
+            </div>
+            <input id="p${i}_tStopLocal" type="datetime-local" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label>Start (Z)</label>
+              <span class="info" title="Auto-calcul (DDHHMMZMMM).">ⓘ</span>
+            </div>
+            <input id="p${i}_tStartZ" disabled />
+            <input id="p${i}_tStartZFull" style="display:none;" />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label>Stop (Z)</label>
+              <span class="info" title="Auto-calcul (DDHHMMZMMM).">ⓘ</span>
+            </div>
+            <input id="p${i}_tStopZ" disabled />
+            <input id="p${i}_tStopZFull" style="display:none;" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_areaName">Location name</label>
+              <span class="info" title="Nom zone/box/station. Ex: WB67 / SEIRAQ.">ⓘ</span>
+            </div>
+            <input id="p${i}_areaName" />
+            <div class="help">Ex : WB67</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_altHundreds">Altitude (hundreds ft MSL)</label>
+              <span class="info" title="Altitude en centaines de pieds MSL. Ex: 150 = 15,000 ft.">ⓘ</span>
+            </div>
+            <input id="p${i}_altHundreds" type="number" min="0" />
+            <div class="help">Ex : 150</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_priority">Priority</label>
+              <span class="info" title="Priorité mission (numérique). Ex: 1.">ⓘ</span>
+            </div>
+            <input id="p${i}_priority" type="number" min="1" />
+            <div class="help">Ex : 1</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_locExtra">Location (optionnel)</label>
+              <span class="info" title="Champ optionnel AMSNLOC field 6 si tu utilises une forme/coordonnées.">ⓘ</span>
+            </div>
+            <input id="p${i}_locExtra" />
+            <div class="help">Ex : /CP/ ou coordonnées selon convention</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="p${i}_set_GTGTLOC" style="display:none;">
+        <div class="row"><span class="pill">Target selection (catalogue)</span></div>
+
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_gt_catalog">TARGET (catalogue)</label>
+            <span class="info" title="Sélectionne une cible définie dans GRND TGT : les champs Name/ID/Type/DMPI/Coord/Datum/Elev/Priority/PV sont pré-remplis.">ⓘ</span>
+          </div>
+          <select id="p${i}_gt_catalog"></select>
+          <div class="help">Astuce : si tu modifies une cible dans GRND TGT, la liste se met à jour automatiquement.</div>
+        </div>
+
+        <hr>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_poa">P/A</label>
+              <span class="info" title="Primary/Alternate designator: P ou A.">ⓘ</span>
+            </div>
+            <select id="p${i}_gt_poa"><option value="P">P</option><option value="A">A</option></select>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_totLocal">TOT (local)</label>
+              <span class="info" title="Time on Target (local) → converti en DDHHMMZMMM.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_totLocal" type="datetime-local" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_netLocal">NET (local)</label>
+              <span class="info" title="Not Earlier Than (local) → DDHHMMZMMM.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_netLocal" type="datetime-local" />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_nltLocal">NLT (local)</label>
+              <span class="info" title="Not Later Than (local) → converti en DDHHMMZMMM, comme TOT/NET.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_nltLocal" type="datetime-local" />
+            <div class="help">Même logique TOT/NET : tu saisis local, le générateur sort en Z.</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_name">Target name</label>
+              <span class="info" title="Nom de cible/installation. Ex: MAIN COMMAND CENTER.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_name" />
+            <div class="help">Ex : HME WORKSHOP</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_id">Target ID</label>
+              <span class="info" title="Identifiant cible. Si vide, auto-généré au moment de Générer (et bouton 🎲 disponible).">ⓘ</span>
+              <button class="miniBtn" type="button" id="p${i}_genTargetId" title="Générer un Target ID">🎲</button>
+            </div>
+            <input id="p${i}_gt_id" />
+            <div class="help">Auto si vide. Ex : ID:TG-${yymmdd()}-P0${i}-ABCDE</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_type">Target type (CAT/SUB)</label>
+              <span class="info" title="Liste issue du PDF. Valeur injectée dans l’ATO = code. Decode affiche le libellé complet.">ⓘ</span>
+            </div>
+            <select id="p${i}_gt_type">
+              ${targetTypeOptionsHTML()}
+            </select>
+            <div class="help">Ex : 14 — Army Bases/Installations</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_dmpiDesc">DMPI desc</label>
+              <span class="info" title="Description DMPI. Ex: MAIN BUILDING.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_dmpiDesc" />
+            <div class="help">Ex : MAIN BUILDING</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_dmpiCoord">DMPI coord</label>
+              <span class="info" title="Coordonnées DMPI. Ex: 345512N0691234E.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_dmpiCoord" />
+            <div class="help">Ex : 345512N0691234E</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_geodatum">Geodetic datum</label>
+              <span class="info" title="Datum, ex: WGS 1984. Si inconnu, '-'.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_geodatum" />
+            <div class="help">Ex : WGS 1984</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_elev">Elevation</label>
+              <span class="info" title="Élévation DMPI en FT ou M. Ex: 5200FT.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_elev" />
+            <div class="help">Ex : 5200FT</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_gt_priority">Target priority</label>
+              <span class="info" title="Priorité cible (numérique). Ex: 1.">ⓘ</span>
+            </div>
+            <input id="p${i}_gt_priority" />
+            <div class="help">Ex : 1</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_gt_struct">Structure type</label>
+            <span class="info" title="Structure Type Code (PDF).">ⓘ</span>
+          </div>
+          <select id="p${i}_gt_struct">
+            ${structureTypeOptionsHTML()}
+          </select>
+          <div class="help">Ex : BA — Bunker Adit</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_gt_pvchar">PV code</label>
+            <span class="info" title="Primary PV code (PDF).">ⓘ</span>
+          </div>
+          <select id="p${i}_gt_pvchar">
+            ${pvCodeOptionsHTML()}
+          </select>
+          <div class="help">Ex : RC — Reinforced Concrete</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_gt_roof">Roof code</label>
+            <span class="info" title="Roof construction code (PDF).">ⓘ</span>
+          </div>
+          <select id="p${i}_gt_roof">
+            ${roofCodeOptionsHTML()}
+          </select>
+          <div class="help">Ex : C — Concrete</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_gt_pvcomposite">PV CHAR (full)</label>
+            <span class="info" title="Combined structure-pv-roof code; used in set string.">ⓘ</span>
+          </div>
+          <input id="p${i}_gt_pvcomposite" disabled />
+          <div class="help">Ex : BA-RC-C</div>
+        </div>
+      </div>
+
+      <div id="p${i}_set_RECCEDAT" style="display:none;">
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_poa">P/A</label>
+              <span class="info" title="Primary/Alternate: P ou A.">ⓘ</span>
+            </div>
+            <select id="p${i}_rc_poa"><option value="P">P</option><option value="A">A</option></select>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_pri">PRI</label>
+              <span class="info" title="Priorité recon (valeur numérique). Ex: 2.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_pri" type="number" min="1" />
+            <div class="help">Ex : 2</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_otLocal">Over target (local)</label>
+              <span class="info" title="Over target (local) → DDHHMMZMMM.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_otLocal" type="datetime-local" />
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_netLocal">NET (local)</label>
+              <span class="info" title="NET (local) → DDHHMMZMMM.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_netLocal" type="datetime-local" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_nltLocal">NLT (local)</label>
+              <span class="info" title="Not Later Than (local) → DDHHMMZMMM, même logique que TOT/NET.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_nltLocal" type="datetime-local" />
+            <div class="help">Standardisé en datetime pour éviter les ambiguïtés HHMMZ vs DDHHMMZMMM.</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_ltiovLocal">LTIOV (local)</label>
+              <span class="info" title="Latest Time of Value (local) → DDHHMMZMMMYYYY.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_ltiovLocal" type="datetime-local" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_rtype">Recon type</label>
+              <span class="info" title="Type recon: PHOTO ou FLR.">ⓘ</span>
+            </div>
+            <select id="p${i}_rc_rtype"><option value=""></option><option value="PHOTO">PHOTO</option><option value="FLR">FLR</option></select>
+            <div class="help">Ex : FLR</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_cov">Coverage</label>
+              <span class="info" title="Couverture: AREACOV ou PINPT.">ⓘ</span>
+            </div>
+            <select id="p${i}_rc_cov"><option value=""></option><option value="AREACOV">AREACOV</option><option value="PINPT">PINPT</option></select>
+            <div class="help">Ex : PINPT</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_img">Imagery type</label>
+              <span class="info" title="Ex: BP (Best Possible) ou FL.">ⓘ</span>
+            </div>
+            <select id="p${i}_rc_img"><option value=""></option><option value="BP">BP</option><option value="FL">FL</option></select>
+            <div class="help">Ex : FL</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_imq">IMQ</label>
+              <span class="info" title="Image qualifier (V/B). Mets juste la valeur.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_imq" />
+            <div class="help">Ex : V</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_cm">CM</label>
+              <span class="info" title="Coverage mode (A/C). Mets juste A ou C.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_cm" />
+            <div class="help">Ex : C</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_purpose">Purpose</label>
+              <span class="info" title="Recon purpose. Ex: A (New Target) / C.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_purpose" />
+            <div class="help">Ex : A</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_task">Intel task code</label>
+              <span class="info" title="Ex: ANA (Analysis).">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_task" />
+            <div class="help">Ex : ANA</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_rc_ctid">Component Target ID</label>
+              <span class="info" title="Component target identifier si utilisé, sinon '-'.">ⓘ</span>
+            </div>
+            <input id="p${i}_rc_ctid" />
+            <div class="help">Ex : -</div>
+          </div>
+        </div>
+
+        <hr>
+        <div class="row"><span class="pill">PTRCPLOT (optionnel)</span></div>
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_pt_coords">LATS coords</label>
+              <span class="info" title="Coordonnées. Mets la partie après 'LATS:' (ou directement format complet en remarques).">ⓘ</span>
+            </div>
+            <input id="p${i}_pt_coords" />
+            <div class="help">Ex : 345512N0691234E</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_pt_name">NAME</label>
+              <span class="info" title="Nom du point/objectif.">ⓘ</span>
+            </div>
+            <input id="p${i}_pt_name" />
+            <div class="help">Ex : TRAINING CAMP</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_pt_rad">RAD (NM)</label>
+              <span class="info" title="Rayon. Ex: 1NM.">ⓘ</span>
+            </div>
+            <input id="p${i}_pt_rad" />
+            <div class="help">Ex : 1NM</div>
+          </div>
+          <div class="row">
+            <div class="fieldlabel">
+              <label for="p${i}_pt_elev">Elevation</label>
+              <span class="info" title="Élévation. Ex: 5200FT.">ⓘ</span>
+            </div>
+            <input id="p${i}_pt_elev" />
+            <div class="help">Ex : 5200FT</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_pt_we">WE (datum)</label>
+            <span class="info" title="Datum. Ex: WGS 1984.">ⓘ</span>
+          </div>
+          <input id="p${i}_pt_we" />
+          <div class="help">Ex : WGS 1984</div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row"><span class="pill">CONTROL + Radios</span></div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_ctrlType">Agency type</label>
+            <span class="info" title="Type d’agence de contrôle. Ex: AWAC, CRC, OTR.">ⓘ</span>
+          </div>
+          <select id="p${i}_ctrlType">
+            <option value=""></option>
+            <option value="AWAC">AWAC</option>
+            <option value="CRC">CRC</option>
+            <option value="OTR">OTR</option>
+            <option value="AIR">AIR</option>
+          </select>
+          <div class="help">Ex : AWAC</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_ctrlCallsign">Callsign</label>
+            <span class="info" title="Callsign de l’agence/contrôleur. Ex: DARKSTAR / TRUMP CARD.">ⓘ</span>
+          </div>
+          <input id="p${i}_ctrlCallsign" />
+          <div class="help">Ex : TRUMP CARD</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_pfreq">PFREQ / PDESIG</label>
+            <span class="info" title="Fréquence primaire ou designator. Mets juste la valeur.">ⓘ</span>
+          </div>
+          <input id="p${i}_pfreq" />
+          <div class="help">Ex : 319.200</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_sfreq">SFREQ / SDESIG</label>
+            <span class="info" title="Fréquence secondaire ou designator.">ⓘ</span>
+          </div>
+          <input id="p${i}_sfreq" />
+          <div class="help">Ex : 121.5</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_rip">RIP</label>
+            <span class="info" title="Report-in point (nom/designator/coords). Ex: DR01.">ⓘ</span>
+          </div>
+          <input id="p${i}_rip" />
+          <div class="help">Ex : DR01</div>
+        </div>
+        <div class="row">
+          <div class="fieldlabel">
+            <label for="p${i}_radiofreq">RADIOFREQ</label>
+            <span class="info" title="Fréquence mission (ta convention). Ex: 255.250.">ⓘ</span>
+          </div>
+          <input id="p${i}_radiofreq" />
+          <div class="help">Ex : 255.250</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="fieldlabel">
+          <label for="p${i}_remarks">GENTEXT / UNIT REMARKS</label>
+          <span class="info" title="Texte libre. Utilise ça pour ROE, restrictions armement, fenêtres, comm plan, notes package, etc.">ⓘ</span>
+        </div>
+        <textarea id="p${i}_remarks"></textarea>
+        <div class="help">Bonne pratique : mets ici ce qui est “actionnable” pour l’équipage (ROE, TOT window, ordnance constraints, etc.).</div>
+      </div>
+    `;
+
+    setTimeout(() => {
+      const ms = $(`p${i}_missionSet`);
+      const showSet = () => {
+        const v = ms.value;
+        $(`p${i}_set_AMSNLOC`).style.display = (v==="AMSNLOC") ? "" : "none";
+        $(`p${i}_set_GTGTLOC`).style.display = (v==="GTGTLOC") ? "" : "none";
+        $(`p${i}_set_RECCEDAT`).style.display = (v==="RECCEDAT") ? "" : "none";
+      };
+      ms.addEventListener("change", () => { showSet(); refreshFilledStyles(); });
+      showSet();
+
+      // AMSNLOC zulu update
+      $(`p${i}_tStartLocal`).addEventListener("input", () => updatePatrolZulu(i));
+      $(`p${i}_tStopLocal`).addEventListener("input", () => updatePatrolZulu(i));
+
+      // Random buttons
+      $(`p${i}_genMissionNo`).addEventListener("click", () => { $(`p${i}_missionNo`).value = genMissionNumber(i); refreshFilledStyles(); });
+      $(`p${i}_genTargetId`).addEventListener("click", () => { $(`p${i}_gt_id`).value = genTargetId(i); refreshFilledStyles(); });
+      $(`p${i}_genIff`).addEventListener("click", () => { $(`p${i}_iff1`).value = genIffCode(); refreshFilledStyles(); });
+
+      const gtBtn = $(`gt${i}_genTargetId`);
+      if (gtBtn){
+        gtBtn.addEventListener("click", () => {
+          $(`gt${i}_id`).value = genGroundTargetId(i);
+          refreshFilledStyles();
+        });
+      }
+
+      // Catalogue selector init + binding
+      const cat = $(`p${i}_gt_catalog`);
+      if (cat){
+        cat.innerHTML = targetCatalogOptionsHTML(cat.value);
+        cat.addEventListener("change", () => {
+          const v = cat.value; // "Tn"
+          if (!v) return;
+          const idx = parseInt(v.slice(1), 10);
+          if (Number.isFinite(idx)) applyTargetToPatrol(i, idx);
+        });
+      }
+
+      // whenever the patrol panel's pv components change, recompute the full code
+      function updatePatrolComposite(){
+        const s = $(`p${i}_gt_struct`)?.value || "";
+        const p = $(`p${i}_gt_pvchar`)?.value || "";
+        const r = $(`p${i}_gt_roof`)?.value || "";
+        const comp = [s, p, r].filter(x => x).join("-");
+        const el = $(`p${i}_gt_pvcomposite`);
+        if (el) el.value = comp;
+      }
+      [
+        `p${i}_gt_struct`,
+        `p${i}_gt_pvchar`,
+        `p${i}_gt_roof`
+      ].forEach(id => {
+        const tmp = $(id);
+        if (tmp) tmp.addEventListener("change", updatePatrolComposite);
+      });
+      updatePatrolComposite();
+
+      bindFilledHandlers(div);
+      refreshFilledStyles();
+      refreshTargetCatalogAllSelects();
+    }, 0);
+
+    return div;
+  }
+
+  function setActivePatrol(i){
+    document.querySelectorAll("#patrolSubtabs .subtabbtn").forEach(b => b.classList.toggle("active", b.dataset.pi === String(i)));
+    document.querySelectorAll("#patrolPanels .subpanel").forEach(p => p.classList.toggle("active", p.id === `patrolPanel${i}`));
+  }
+
+  function rebuildPatrolUI(){
+    const snap = snapshotInputs();
+
+    const n = getPatrolCount();
+    const subtabs = $("patrolSubtabs");
+    const panels = $("patrolPanels");
+    subtabs.innerHTML = "";
+    panels.innerHTML = "";
+    for (let i=1; i<=n; i++){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "subtabbtn" + (i===1 ? " active" : "");
+      btn.dataset.pi = String(i);
+      btn.textContent = `PATROL ${i}`;
+      btn.addEventListener("click", () => setActivePatrol(i));
+      subtabs.appendChild(btn);
+
+      const panel = makePatrolPanel(i);
+      if (i===1) panel.classList.add("active");
+      panels.appendChild(panel);
+    }
+
+    restoreInputs(snap);
+
+    updateTimeframZulu();
+    updateMissionMonthFromDate();
+    bindFilledHandlers(document);
+    refreshFilledStyles();
+    refreshTargetCatalogAllSelects();
+  }
+
+  function buildHeaderBlock(){
+    const oper = normDash($("oper").value);
+    const originator = normDash($("originator").value);
+    const month = normDash($("msgMonth").value);
+
+    // serial auto if blank
+    if (!$("serial").value.trim()){
+      const auto = genSerialFromMissionDate();
+      if (auto) $("serial").value = auto;
+    }
+    const serial = normDash($("serial").value);
+
+    const qualifier = normEmpty($("qualifier").value);
+    const chgno = normDash($("chgno").value);
+
+    const fromZ = normDash($("tfFromZ").value);
+    const toZ   = normDash($("tfToZ").value);
+    const asofZ = normDash($("tfAsofZ").value);
+
+    const msgid = qualifier === "CHG"
+      ? `MSGID/ATO/${originator}/${serial}/${month}/CHG/${chgno}//`
+      : `MSGID/ATO/${originator}/${serial}/${month}//`;
+
+    return [
+      `OPER/${oper}//`,
+      msgid,
+      `AKNLDG/NO//`,
+      `TIMEFRAM/FROM:${fromZ}/TO:${toZ}/ASOF:${asofZ}//`,
+      ``
+    ].join("\n");
+  }
+
+  function buildMissionSet(i){
+    const setKind = $(`p${i}_missionSet`).value;
+
+    if (setKind === "AMSNLOC") {
+      const tStartZ = normDash($(`p${i}_tStartZ`).value);
+      const tStopZ  = normDash($(`p${i}_tStopZ`).value);
+      const areaName = normDash($(`p${i}_areaName`).value);
+      const altHundreds = normDash($(`p${i}_altHundreds`).value);
+      const priority = normDash($(`p${i}_priority`).value);
+      const locExtra = normEmpty($(`p${i}_locExtra`).value);
+      return `AMSNLOC/${tStartZ}/${tStopZ}/${areaName}/${altHundreds}/${priority}${locExtra}//`;
+    }
+
+    if (setKind === "GTGTLOC") {
+      const poa = normDash($(`p${i}_gt_poa`).value);
+      const tz = $("tz").value;
+      const totUTC = tz ? localInTZ_to_UTCDate($(`p${i}_gt_totLocal`).value, tz) : null;
+      const netUTC = tz ? localInTZ_to_UTCDate($(`p${i}_gt_netLocal`).value, tz) : null;
+      const nltUTC = tz ? localInTZ_to_UTCDate($(`p${i}_gt_nltLocal`).value, tz) : null;
+
+      const totZ = totUTC ? formatDTG_Z_short(totUTC) : "-";
+      const netZ = netUTC ? formatDTG_Z_short(netUTC) : "-";
+      const nltZ = nltUTC ? formatDTG_Z_short(nltUTC) : "-";
+
+      const name = normDash($(`p${i}_gt_name`).value);
+      const tid = normDash($(`p${i}_gt_id`).value);
+      const ttype = normDash($(`p${i}_gt_type`).value);
+      const dmpiDesc = normDash($(`p${i}_gt_dmpiDesc`).value);
+      const dmpiCoord = normDash($(`p${i}_gt_dmpiCoord`).value);
+      const geodatum = normDash($(`p${i}_gt_geodatum`).value);
+      const elev = normDash($(`p${i}_gt_elev`).value);
+      const tpri = normDash($(`p${i}_gt_priority`).value);
+      const struct = normDash($(`p${i}_gt_struct`)?.value);
+      const code = normDash($(`p${i}_gt_pvchar`).value);
+      const roof = normDash($(`p${i}_gt_roof`)?.value);
+      // join parts, skipping empty/dash
+      const pv = [struct, code, roof].filter(x => x && x !== "-").join("-");
+
+      return `GTGTLOC/${poa}/TOT:${totZ}/NET:${netZ}/NLT:${nltZ}/${name}/${tid}/${ttype}/${dmpiDesc}/${dmpiCoord}/${geodatum}/${elev}/${tpri}/PV:${pv}//`;
+    }
+
+    if (setKind === "RECCEDAT") {
+      const poa = normDash($(`p${i}_rc_poa`).value);
+      const pri = normDash($(`p${i}_rc_pri`).value);
+
+      const tz = $("tz").value;
+      const otUTC  = tz ? localInTZ_to_UTCDate($(`p${i}_rc_otLocal`).value, tz) : null;
+      const netUTC = tz ? localInTZ_to_UTCDate($(`p${i}_rc_netLocal`).value, tz) : null;
+      const nltUTC = tz ? localInTZ_to_UTCDate($(`p${i}_rc_nltLocal`).value, tz) : null;
+
+      const otZ  = otUTC ? formatDTG_Z_short(otUTC) : "-";
+      const netZ = netUTC ? formatDTG_Z_short(netUTC) : "-";
+      const nltZ = nltUTC ? formatDTG_Z_short(nltUTC) : "-";
+
+      const ltiovUTC = tz ? localInTZ_to_UTCDate($(`p${i}_rc_ltiovLocal`).value, tz) : null;
+      const ltiovZ = ltiovUTC ? formatDTG_Z(ltiovUTC) : "-";
+
+      const rtype = normDash($(`p${i}_rc_rtype`).value);
+      const cov = normDash($(`p${i}_rc_cov`).value);
+      const img = normDash($(`p${i}_rc_img`).value);
+      const imq = normDash($(`p${i}_rc_imq`).value);
+      const cm = normDash($(`p${i}_rc_cm`).value);
+      const purpose = normDash($(`p${i}_rc_purpose`).value);
+      const task = normDash($(`p${i}_rc_task`).value);
+      const ctid = normDash($(`p${i}_rc_ctid`).value);
+
+      const reccedat = `RECCEDAT/${poa}/PRI:${pri}/${otZ}/NET:${netZ}/NLT:${nltZ}/LTIOV:${ltiovZ}/${rtype}/${cov}/${img}/IMQ:${imq}/CM:${cm}/${purpose}/${task}/${ctid}//`;
+
+      const pt_coords = normEmpty($(`p${i}_pt_coords`).value);
+      const pt_name = normEmpty($(`p${i}_pt_name`).value);
+      const pt_rad = normEmpty($(`p${i}_pt_rad`).value);
+      const pt_elev = normEmpty($(`p${i}_pt_elev`).value);
+      const pt_we = normEmpty($(`p${i}_pt_we`).value);
+
+      if (pt_coords || pt_name || pt_rad || pt_elev || pt_we) {
+        const ptrc = `PTRCPLOT/LATS:${normDash(pt_coords)}/NAME:${normDash(pt_name)}/RAD:${normDash(pt_rad)}/${normDash(pt_elev)}/${normDash(pt_we)}//`;
+        return reccedat + "\n" + ptrc;
+      }
+      return reccedat;
+    }
+
+    return `AMSNLOC/-/-/-/-/-//`;
+  }
+
+  function buildPatrolBlock(i){
+    ensureGeneratedCodes(i);
+
+    const taskunit = normDash($(`p${i}_taskunit`).value);
+    const unitloc = normDash($(`p${i}_unitloc`).value);
+
+    const missionNo = normDash($(`p${i}_missionNo`).value);
+    const amcNo = normDash($(`p${i}_amcNo`).value);
+    const pkgid = normDash($(`p${i}_pkgid`).value);
+    const mc = normEmpty($(`p${i}_mc`).value);
+
+    const primaryType = normDash($(`p${i}_primaryType`).value);
+    const secondaryType = normDash($(`p${i}_secondaryType`).value);
+    const alert = normDash($(`p${i}_alert`).value);
+
+    const depLoc = normDash($(`p${i}_depLoc`).value);
+    const arrLoc = normDash($(`p${i}_arrLoc`).value);
+    const extraTail = normEmpty($(`p${i}_extraAmsndatTail`).value);
+
+    const nAcs = normDash($(`p${i}_nAcs`).value);
+    const acType = normDash($(`p${i}_acType`).value);
+    const callsign = normDash($(`p${i}_callsign`).value);
+    const cfg1 = normDash($(`p${i}_cfg1`).value);
+    const cfg2 = normDash($(`p${i}_cfg2`).value);
+    const datalink = normDash($(`p${i}_datalink`).value);
+    const iff1 = normDash($(`p${i}_iff1`).value);
+    const iff2 = normDash($(`p${i}_iff2`).value);
+
+    const ctrlType = normDash($(`p${i}_ctrlType`).value);
+    const ctrlCallsign = normDash($(`p${i}_ctrlCallsign`).value);
+    const pfreq = normDash($(`p${i}_pfreq`).value);
+    const sfreq = normDash($(`p${i}_sfreq`).value);
+    const rip = normEmpty($(`p${i}_rip`).value);
+    const radiofreq = normDash($(`p${i}_radiofreq`).value);
+    const remarks = normEmpty($(`p${i}_remarks`).value);
+
+    const taskLine = `TASKUNIT/${taskunit}/ICAO:${unitloc}//`;
+
+    const amsndat =
+      `AMSNDAT/${missionNo}/${amcNo}/${pkgid}/${mc || "-"}/${primaryType}/${secondaryType}/${alert}/DEPLOC:${depLoc}/ARRLOC:${arrLoc}//` +
+      (extraTail ? ` ${extraTail}` : "");
+
+    const msnacft = `MSNACFT/${nAcs}/ACTYP:${acType}/${callsign}/${cfg1}/${cfg2}/${datalink}/${iff1}/${iff2}//`;
+
+    const missionSet = buildMissionSet(i);
+
+    const bits = [`CONTROL/${ctrlType}/${ctrlCallsign}`, `PFREQ:${pfreq}`, `SFREQ:${sfreq}`];
+    if (rip) bits.push(rip);
+    const control = bits.join("/") + "//";
+
+    const radio = `RADIOFREQ: ${radiofreq}`;
+    const gentext = remarks ? `\nGENTEXT/UNIT REMARKS/${remarks}//` : "";
+
+    return [taskLine, amsndat, msnacft, missionSet, control, "", radio, gentext].join("\n").trim();
+  }
+
+  function explainPatrol(i){
+    const tz = $("tz").value;
+    const setKind = $(`p${i}_missionSet`).value;
+
+    const missionNo = normDash($(`p${i}_missionNo`).value);
+    const nAcs = normDash($(`p${i}_nAcs`).value);
+    const acType = normDash($(`p${i}_acType`).value);
+    const primaryType = normDash($(`p${i}_primaryType`).value);
+    const secondaryType = normEmpty($(`p${i}_secondaryType`).value);
+    const callsign = normDash($(`p${i}_callsign`).value);
+
+    const taskunit  = normDash($(`p${i}_taskunit`).value);
+    const unitloc   = normDash($(`p${i}_unitloc`).value);
+
+    const ctrlType = normDash($(`p${i}_ctrlType`).value);
+    const ctrlCallsign = normDash($(`p${i}_ctrlCallsign`).value);
+    const pfreq = normDash($(`p${i}_pfreq`).value);
+    const sfreq = normDash($(`p${i}_sfreq`).value);
+    const radiofreq = normDash($(`p${i}_radiofreq`).value);
+
+    const sec = (secondaryType && secondaryType !== "-") ? ` (secondary: ${secondaryType})` : "";
+    let line1 = `Mission ID ${missionNo} is a flight of ${nAcs} ${acType}s flying a ${primaryType} mission${sec}. Callsign: ${callsign}. Tasked unit: ${taskunit} @ ${unitloc}.`;
+
+    let line2 = "";
+
+    if (setKind === "AMSNLOC") {
+      const areaName = normDash($(`p${i}_areaName`).value);
+      const tStart = normDash($(`p${i}_tStartZ`).value);
+      const tStop  = normDash($(`p${i}_tStopZ`).value);
+      const altHundreds = normDash($(`p${i}_altHundreds`).value);
+      const altFt = (altHundreds !== "-" && altHundreds !== "") ? (parseInt(altHundreds,10) * 100) : null;
+
+      line2 = `The ${acType}s will be on station in ${areaName} from ${tStart} to ${tStop}` +
+              (altFt ? ` at ${altFt} ft MSL.` : `.`);
+
+    } else if (setKind === "GTGTLOC") {
+      const totUTC = tz ? localInTZ_to_UTCDate($(`p${i}_gt_totLocal`).value, tz) : null;
+      const netUTC = tz ? localInTZ_to_UTCDate($(`p${i}_gt_netLocal`).value, tz) : null;
+      const nltUTC = tz ? localInTZ_to_UTCDate($(`p${i}_gt_nltLocal`).value, tz) : null;
+      const totZ = totUTC ? formatDTG_Z_short(totUTC) : "-";
+      const netZ = netUTC ? formatDTG_Z_short(netUTC) : "-";
+      const nltZ = nltUTC ? formatDTG_Z_short(nltUTC) : "-";
+
+      const tgt = normDash($(`p${i}_gt_name`).value);
+      const tid = normDash($(`p${i}_gt_id`).value);
+      const coord = normDash($(`p${i}_gt_dmpiCoord`).value);
+
+      const ttype = normDash($(`p${i}_gt_type`).value);
+      const ttypeLabel = TARGET_TYPE_LABEL[ttype] || "Unknown target type";
+
+      const pvRaw = normDash($(`p${i}_gt_pvchar`).value);
+      // describe composite code if it contains dashes
+      let pvLabel;
+      if (pvRaw.includes("-")){
+        const [s, c, r] = pvRaw.split("-");
+        const parts = [];
+        if (s) parts.push(STRUCTURE_TYPE_LABEL[s] || s);
+        if (c) parts.push(PV_CODE_LABEL[c] || c);
+        if (r) parts.push(ROOF_CODE_LABEL[r] || r);
+        pvLabel = parts.join(" / ");
+      } else {
+        pvLabel = PV_CODE_LABEL[pvRaw] || "Unknown PV CHAR";
+      }
+
+      line2 = `Tasked against target ${tgt} (${tid}). DMPI ${coord}. Target type ${ttype} — ${ttypeLabel}. PV CHAR ${pvRaw} — ${pvLabel}. TOT ${totZ} (NET ${netZ} / NLT ${nltZ}).`;
+
+    } else if (setKind === "RECCEDAT") {
+      const otUTC  = tz ? localInTZ_to_UTCDate($(`p${i}_rc_otLocal`).value, tz) : null;
+      const netUTC = tz ? localInTZ_to_UTCDate($(`p${i}_rc_netLocal`).value, tz) : null;
+      const nltUTC = tz ? localInTZ_to_UTCDate($(`p${i}_rc_nltLocal`).value, tz) : null;
+      const otZ  = otUTC ? formatDTG_Z_short(otUTC) : "-";
+      const netZ = netUTC ? formatDTG_Z_short(netUTC) : "-";
+      const nltZ = nltUTC ? formatDTG_Z_short(nltUTC) : "-";
+
+      const rtype = normDash($(`p${i}_rc_rtype`).value);
+      const cov = normDash($(`p${i}_rc_cov`).value);
+
+      const ptName = normEmpty($(`p${i}_pt_name`).value);
+      const ptCoords = normEmpty($(`p${i}_pt_coords`).value);
+      const where = ptName ? ptName : (ptCoords ? ptCoords : "the assigned area");
+
+      line2 = `Conducting ${rtype}/${cov} reconnaissance over ${where}. Timing: OT ${otZ} (NET ${netZ} / NLT ${nltZ}).`;
+    }
+
+    const line3 = `Air control: ${ctrlType}/${ctrlCallsign} will contact the flight on primary ${pfreq} (secondary ${sfreq}).`;
+    const line4 = `RADIO FREQ: ${radiofreq}`;
+
+    return [line1, line2, line3, line4, ""].join("\n");
+  }
+
+  function generateAll(){
+    const header = buildHeaderBlock();
+    const n = getPatrolCount();
+
+    let ato = header;
+    let exp = `ATO DECODE (plain language)\n\n`;
+
+    for (let i=1; i<=n; i++){
+      ato += "\n" + buildPatrolBlock(i) + "\n";
+      exp += explainPatrol(i) + "\n";
+    }
+
+    $("out").value = ato.trim() + "\n";
+    $("outExplain").value = exp.trim() + "\n";
+    refreshFilledStyles();
+  }
+
+  async function copyAll(){
+    const text = $("out").value + "\n" + $("outExplain").value;
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("ATO + decode copiés dans le presse-papiers.");
+    } catch {
+      const tmp = document.createElement("textarea");
+      tmp.value = text;
+      document.body.appendChild(tmp);
+      tmp.select();
+      document.execCommand("copy");
+      document.body.removeChild(tmp);
+      alert("ATO + decode copiés (fallback).");
+    }
+  }
+
+  function clearAll(){
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+      if (!el.id) return;
+      if (el.id === "tz") { el.value = ""; return; }
+      if (el.id === "patrolCount") { el.value = "1"; return; }
+      if (el.id === "tgtCount") { el.value = "1"; return; }
+      if (el.disabled) return;
+      el.value = "";
+    });
+
+    rebuildTargetUI();
+    rebuildPatrolUI();
+
+    updateMissionMonthFromDate();
+    updateTimeframZulu();
+    $("out").value = "";
+    $("outExplain").value = "";
+    refreshFilledStyles();
+  }
+
+  function parseATO(text){
+    const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+
+    const header = {};
+    const patrols = [];
+
+    let current = null;
+
+    for (const ln of lines){
+      if (ln.startsWith("OPER/")) header.OPER = ln;
+      if (ln.startsWith("MSGID/")) header.MSGID = ln;
+      if (ln.startsWith("TIMEFRAM/")) header.TIMEFRAM = ln;
+
+      if (ln.startsWith("TASKUNIT/")){
+        current = { TASKUNIT: ln };
+        patrols.push(current);
+        continue;
+      }
+      if (!current) continue;
+
+      if (ln.startsWith("AMSNDAT/")) current.AMSNDAT = ln;
+      if (ln.startsWith("MSNACFT/")) current.MSNACFT = ln;
+      if (ln.startsWith("AMSNLOC/")) current.SET = ln;
+      if (ln.startsWith("GTGTLOC/")) current.SET = ln;
+      if (ln.startsWith("RECCEDAT/")) current.SET = ln;
+      if (ln.startsWith("PTRCPLOT/")) current.PTRCPLOT = ln;
+      if (ln.startsWith("CONTROL/")) current.CONTROL = ln;
+      if (ln.startsWith("RADIOFREQ:")) current.RADIO = ln;
+      if (ln.startsWith("GENTEXT/UNIT REMARKS/")) current.REMARKS = ln;
+    }
+
+    return { header, patrols };
+  }
+
+  function applyHeaderImport(h){
+    if (h.OPER){
+      const parts = h.OPER.split("/");
+      $("oper").value = (parts[1] || "").replace(/\/\//g,"").trim();
+    }
+    if (h.MSGID){
+      const p = h.MSGID.split("/");
+      $("originator").value = (p[2] || "").trim();
+      $("serial").value = (p[3] || "").trim();
+      $("msgMonth").value = (p[4] || "").trim();
+      if ((p[5] || "").trim() === "CHG"){
+        $("qualifier").value = "CHG";
+        $("chgno").value = (p[6] || "").replace(/\/\//g,"").trim();
+      } else {
+        $("qualifier").value = "";
+      }
+    }
+    if (h.TIMEFRAM){
+      const mFrom = h.TIMEFRAM.match(/FROM:([^\/]+)/);
+      const mTo   = h.TIMEFRAM.match(/TO:([^\/]+)/);
+      const mAsof = h.TIMEFRAM.match(/ASOF:([^\/]+)/);
+      $("tfFromZ").value = mFrom ? mFrom[1].replace(/\/\//g,"") : $("tfFromZ").value;
+      $("tfToZ").value   = mTo   ? mTo[1].replace(/\/\//g,"")   : $("tfToZ").value;
+      $("tfAsofZ").value = mAsof ? mAsof[1].replace(/\/\//g,"") : $("tfAsofZ").value;
+    }
+  }
+
+  function applyPatrolImport(i, p){
+    if (p.TASKUNIT){
+      const parts = p.TASKUNIT.split("/");
+      $(`p${i}_taskunit`).value = (parts[1] || "").trim();
+      const m = p.TASKUNIT.match(/ICAO:([^\/]+)\/\//);
+      if (m) $(`p${i}_unitloc`).value = m[1].trim();
+    }
+
+    if (p.AMSNDAT){
+      const parts = p.AMSNDAT.split("/");
+      $(`p${i}_missionNo`).value = (parts[1] || "").trim();
+      $(`p${i}_amcNo`).value     = (parts[2] || "").trim();
+      $(`p${i}_pkgid`).value     = (parts[3] || "").trim();
+      const mc = (parts[4] || "").trim();
+      $(`p${i}_mc`).value = (mc === "MC") ? "MC" : "";
+      $(`p${i}_primaryType`).value   = (parts[5] || "").trim();
+      $(`p${i}_secondaryType`).value = (parts[6] || "").trim();
+      $(`p${i}_alert`).value         = (parts[7] || "").trim();
+
+      const dep = p.AMSNDAT.match(/DEPLOC:([^\/]+)/);
+      const arr = p.AMSNDAT.match(/ARRLOC:([^\/]+)/);
+      if (dep) $(`p${i}_depLoc`).value = dep[1].trim();
+      if (arr) $(`p${i}_arrLoc`).value = arr[1].replace(/\/\//g,"").trim();
+    }
+
+    if (p.MSNACFT){
+      const parts = p.MSNACFT.split("/");
+      $(`p${i}_nAcs`).value     = (parts[1] || "").trim();
+      const act = p.MSNACFT.match(/ACTYP:([^\/]+)/);
+      if (act) $(`p${i}_acType`).value = act[1].trim();
+      $(`p${i}_callsign`).value = (parts[3] || "").trim();
+      $(`p${i}_cfg1`).value     = (parts[4] || "").trim();
+      $(`p${i}_cfg2`).value     = (parts[5] || "").trim();
+      $(`p${i}_datalink`).value = (parts[6] || "").trim();
+      $(`p${i}_iff1`).value     = (parts[7] || "").trim();
+      $(`p${i}_iff2`).value     = (parts[8] || "").replace(/\/\//g,"").trim();
+    }
+
+    if (p.CONTROL){
+      const parts = p.CONTROL.split("/");
+      $(`p${i}_ctrlType`).value = (parts[1] || "").trim();
+      $(`p${i}_ctrlCallsign`).value = (parts[2] || "").trim();
+      const pf = p.CONTROL.match(/PFREQ:([^\/]+)/);
+      const sf = p.CONTROL.match(/SFREQ:([^\/]+)/);
+      if (pf) $(`p${i}_pfreq`).value = pf[1].trim();
+      if (sf) $(`p${i}_sfreq`).value = sf[1].trim();
+      const ripTok = parts.find(t => t && !t.includes("PFREQ:") && !t.includes("SFREQ:") && t.includes("DR"));
+      if (ripTok) $(`p${i}_rip`).value = ripTok.replace(/\/\//g,"").trim();
+    }
+
+    if (p.RADIO){
+      $(`p${i}_radiofreq`).value = p.RADIO.replace("RADIOFREQ:","").trim();
+    }
+
+    if (p.REMARKS){
+      $(`p${i}_remarks`).value = p.REMARKS.replace("GENTEXT/UNIT REMARKS/","").replace(/\/\//g,"").trim();
+    }
+
+    if (p.SET){
+      if (p.SET.startsWith("AMSNLOC/")){
+        $(`p${i}_missionSet`).value = "AMSNLOC";
+        const parts = p.SET.split("/");
+        $(`p${i}_tStartZ`).value = (parts[1] || "").trim();
+        $(`p${i}_tStopZ`).value  = (parts[2] || "").trim();
+        $(`p${i}_areaName`).value = (parts[3] || "").trim();
+        $(`p${i}_altHundreds`).value = (parts[4] || "").trim();
+        $(`p${i}_priority`).value = (parts[5] || "").replace(/\/\//g,"").trim();
+      }
+      if (p.SET.startsWith("GTGTLOC/")){
+        $(`p${i}_missionSet`).value = "GTGTLOC";
+        const parts = p.SET.split("/");
+        $(`p${i}_gt_poa`).value = (parts[1] || "").trim();
+        $(`p${i}_gt_name`).value = (parts[5] || "").trim();
+        $(`p${i}_gt_id`).value = (parts[6] || "").trim();
+        $(`p${i}_gt_type`).value = (parts[7] || "").trim();
+        $(`p${i}_gt_dmpiDesc`).value = (parts[8] || "").trim();
+        $(`p${i}_gt_dmpiCoord`).value = (parts[9] || "").trim();
+        $(`p${i}_gt_geodatum`).value = (parts[10] || "").trim();
+        $(`p${i}_gt_elev`).value = (parts[11] || "").trim();
+        $(`p${i}_gt_priority`).value = (parts[12] || "").trim();
+        const pvMatch = p.SET.match(/\/PV:([^\/]+)\/\//);
+        if (pvMatch){
+          const full = pvMatch[1].trim();
+          const comps = full.split("-");
+          // structure / pv / roof
+          $(`p${i}_gt_struct`).value = comps[0] || "";
+          $(`p${i}_gt_pvchar`).value = comps[1] || "";
+          $(`p${i}_gt_roof`).value = comps[2] || "";
+          // update composite field if present
+          const compEl = $(`p${i}_gt_pvcomposite`);
+          if (compEl) compEl.value = full;
+        }
+      }
+      if (p.SET.startsWith("RECCEDAT/")){
+        $(`p${i}_missionSet`).value = "RECCEDAT";
+        const mPri = p.SET.match(/PRI:([^\/]+)/); if (mPri) $(`p${i}_rc_pri`).value = mPri[1].trim();
+        const mImq = p.SET.match(/IMQ:([^\/]+)/); if (mImq) $(`p${i}_rc_imq`).value = mImq[1].trim();
+        const mCm  = p.SET.match(/CM:([^\/]+)/);  if (mCm)  $(`p${i}_rc_cm`).value  = mCm[1].trim();
+      }
+    }
+
+    $(`p${i}_missionSet`).dispatchEvent(new Event("change"));
+  }
+
+  function importApply(){
+    const text = $("importText").value || "";
+    if (!text.trim()){
+      $("importDlg").close();
+      return;
+    }
+
+    const parsed = parseATO(text);
+    applyHeaderImport(parsed.header);
+
+    const n = Math.max(1, Math.min(12, parsed.patrols.length || 1));
+    $("patrolCount").value = String(n);
+    rebuildPatrolUI();
+
+    for (let i=1; i<=n; i++){
+      const p = parsed.patrols[i-1];
+      if (p) applyPatrolImport(i, p);
+    }
+
+    $("importDlg").close();
+    refreshFilledStyles();
+    refreshTargetCatalogAllSelects();
+  }
+
+  const filledBound = new WeakSet();
+
+  function bindFilledHandlers(root){
+    const scope = root?.querySelectorAll ? root : document;
+    scope.querySelectorAll("input, textarea, select").forEach(el => {
+      if (!el.id) return;
+      if (filledBound.has(el)) return;
+      filledBound.add(el);
+      el.addEventListener("input", refreshFilledStyles);
+      el.addEventListener("change", refreshFilledStyles);
+    });
+  }
+
+  function refreshFilledStyles(){
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+      if (!el.id) return;
+      if (el.disabled) { el.classList.remove("filled"); return; }
+      const v = (el.value ?? "").toString().trim();
+      el.classList.toggle("filled", v.length > 0);
+    });
+  }
+
+  // ======= EVENTS / INIT =======
+  document.querySelectorAll(".tabbtn").forEach(btn => btn.addEventListener("click", () => setActiveTab(btn.dataset.tab)));
+
+  $("missionDate").addEventListener("input", () => { updateMissionMonthFromDate(); updateTimeframZulu(); refreshFilledStyles(); });
+  $("tz").addEventListener("change", () => { updateTimeframZulu(); refreshFilledStyles(); });
+  $("tfFromLocal").addEventListener("input", updateTimeframZulu);
+  $("tfToLocal").addEventListener("input", updateTimeframZulu);
+  $("tfAsofLocal").addEventListener("input", updateTimeframZulu);
+
+  $("patrolCount").addEventListener("change", rebuildPatrolUI);
+  $("patrolCount").addEventListener("input", rebuildPatrolUI);
+
+  $("tgtCount").addEventListener("change", rebuildTargetUI);
+  $("tgtCount").addEventListener("input", rebuildTargetUI);
+
+  $("btnGen").addEventListener("click", generateAll);
+  $("btnCopy").addEventListener("click", copyAll);
+  $("btnClear").addEventListener("click", clearAll);
+
+  $("btnImport").addEventListener("click", () => $("importDlg").showModal());
+  $("btnImportCancel").addEventListener("click", () => $("importDlg").close());
+  $("btnImportApply").addEventListener("click", importApply);
+
+  $("genSerialBtn").addEventListener("click", () => {
+    const auto = genSerialFromMissionDate();
+    if (auto) $("serial").value = auto;
+    refreshFilledStyles();
+  });
+
+  // Connect button: hide splash screen
+  $("connectBtn").addEventListener("click", () => {
+    const splash = $("splashScreen");
+    splash.classList.add("hidden");
+    document.body.classList.remove("splash-active");
+  });
+
+  // Initial build
+  rebuildTargetUI();
+  rebuildPatrolUI();
+  updateMissionMonthFromDate();
+  updateTimeframZulu();
+  bindFilledHandlers(document);
+  refreshFilledStyles();
+  refreshTargetCatalogAllSelects();
+  
+  // Activate splash screen on load
+  document.body.classList.add("splash-active");
+</script>
+</body>
+</html>
