@@ -1416,11 +1416,11 @@
           </div>
           <div class="row">
             <div class="fieldlabel">
-              <label for="p${i}_altHundreds">Altitude (hundreds ft MSL)</label>
-              <span class="info" title="Altitude en centaines de pieds MSL. Ex: 150 = 15,000 ft.">ⓘ</span>
+              <label for="p${i}_altHundreds">Altitude (ft MSL)</label>
+              <span class="info" title="Altitude en pieds MSL. Ex: 15000 pour 15,000 ft.">ⓘ</span>
             </div>
             <input id="p${i}_altHundreds" type="number" min="0" />
-            <div class="help">Ex : 150</div>
+            <div class="help">Ex : 15000</div>
           </div>
         </div>
 
@@ -2174,7 +2174,7 @@
       const tStart = normDash($(`p${i}_tStartZ`).value);
       const tStop  = normDash($(`p${i}_tStopZ`).value);
       const altHundreds = normDash($(`p${i}_altHundreds`).value);
-      const altFt = (altHundreds !== "-" && altHundreds !== "") ? (parseInt(altHundreds,10) * 100) : null;
+      const altFt = (altHundreds !== "-" && altHundreds !== "") ? parseInt(altHundreds,10) : null;
 
       line2 = `The ${acType}s will be on station in ${areaName} from ${tStart} to ${tStop}` +
               (altFt ? ` at ${altFt} ft MSL.` : `.`);
